@@ -1,0 +1,72 @@
+--- # ---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-westiva-bank
+  namespace: cert-manager
+spec:
+  acme:
+    # The ACME server URL
+    server: https://acme-v02.api.letsencrypt.org/directory
+    # Email address used for ACME registration
+    email: tecnologia@evlos4u.com
+    # Name of a secret used to store the ACME account private key
+    privateKeySecretRef:
+      name: letsencrypt-westiva-bank
+    # Enable the HTTP-01 challenge provider
+    solvers:
+      - http01:
+          ingress:
+            class: azure/application-gateway
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: base-westiva-ingress
+  namespace: aks-evl-westiva-prd
+  annotations:
+    kubernetes.io/ingress.class: azure/application-gateway
+    cert-manager.io/cluster-issuer: letsencrypt-westiva-bank
+    cert-manager.io/acme-challenge-type: http01
+    acme.cert-manager.io/http01-edit-in-place: "true"
+    appgw.ingress.kubernetes.io/ssl-redirect: "true"
+    appgw.ingress.kubernetes.io/request-timeout: "120"
+spec:
+  tls:
+    - hosts:
+        - westiva-app.rapidbank.com.br
+        - westiva-api.rapidbank.com.br
+        - admin-westiva.rapidbank.com.br
+
+      secretName: letsencrypt-westiva-bank
+  rules:
+    - host: westiva-app.rapidbank.com.br
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: westiva-bank-app-k8s
+                port:
+                  number: 80
+    - host: westiva-api.rapidbank.com.br
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: westiva-bank-api-k8s
+                port:
+                  number: 80
+    - host: admin-westiva.rapidbank.com.br
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: servico-westiva-admin-web-k8s
+                port:
+                  number: 80

@@ -1,0 +1,181 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "administratorLogin": {
+            "type": "string"
+        },
+        "administratorLoginPassword": {
+            "type": "securestring"
+        },
+        "allowAzureIps": {
+            "type": "bool"
+        },
+        "enableADS": {
+            "type": "bool"
+        },
+        "enableVA": {
+            "type": "bool"
+        },
+        "serverName": {
+            "type": "string"
+        },
+        "storageName": {
+            "type": "string"
+        },
+        "tags": {
+            "type": "object",
+            "defaultValue": {}
+        },
+        "useVAManagedIdentity": {
+            "type": "bool",
+            "metadata": {
+                "description": "To enable vulnerability assessments, the user deploying this template must have an administrator or owner permissions."
+            }
+        },
+        "vnetName": {
+            "type": "string"
+        },
+        "subnetName": {
+            "type": "string"
+        },
+        "auditSettingsRetentionDays": {
+            "type": "int"
+        },
+        "enableAuditing": {
+            "type": "bool"
+        },
+        "activeDirectoryAdministratorLogin": {
+            "type": "string"
+        },
+        "activeDirectoryAdministratorObjectId": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "uniqueRoleGuid": "[guid(resourceId('Microsoft.Storage/storageAccounts', parameters('storageName')), variables('storageBlobContributor'), resourceId('Microsoft.Sql/servers', parameters('serverName')))]",
+        "StorageBlobContributor": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')]"
+    },
+    "resources": [
+        {
+            "condition": "[parameters('useVAManagedIdentity')]",
+            "type": "Microsoft.Storage/storageAccounts/providers/roleAssignments",
+            "apiVersion": "2018-09-01-preview",
+            "name": "[concat(parameters('storageName'), '/Microsoft.Authorization/', variables('uniqueRoleGuid') )]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('serverName'))]"
+            ],
+            "properties": {
+                "roleDefinitionId": "[variables('StorageBlobContributor')]",
+                "principalId": "[reference(resourceId('Microsoft.Sql/servers', parameters('serverName')), '2018-06-01-preview', 'Full').identity.principalId]",
+                "scope": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageName'))]",
+                "principalType": "ServicePrincipal"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers",
+            "apiVersion": "2019-06-01-preview",
+            "name": "[parameters('serverName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "administratorLogin": "[parameters('administratorLogin')]",
+                "administratorLoginPassword": "[parameters('administratorLoginPassword')]",
+                "version": "12.0"
+            },
+            "identity": "[if(and(parameters('enableVA'),parameters('useVAManagedIdentity')), json('{\"type\":\"SystemAssigned\"}'), json('null'))]",
+            "tags": "[parameters('tags')]",
+            "resources": [
+                {
+                    "condition": "[parameters('allowAzureIPs')]",
+                    "type": "firewallRules",
+                    "apiVersion": "2014-04-01-preview",
+                    "name": "AllowAllWindowsAzureIps",
+                    "location": "[resourceGroup().location]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Sql/servers', parameters('serverName'))]"
+                    ],
+                    "properties": {
+                        "endIpAddress": "0.0.0.0",
+                        "startIpAddress": "0.0.0.0"
+                    }
+                },
+                {
+                    "condition": "[parameters('enableADS')]",
+                    "type": "securityAlertPolicies",
+                    "apiVersion": "2017-03-01-preview",
+                    "name": "Default",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Sql/servers', parameters('serverName'))]"
+                    ],
+                    "properties": {
+                        "state": "Enabled",
+                        "disabledAlerts": [],
+                        "emailAddresses": [],
+                        "emailAccountAdmins": true
+                    }
+                },
+                {
+                    "condition": "[parameters('enableVA')]",
+                    "type": "vulnerabilityAssessments",
+                    "apiVersion": "2018-06-01-preview",
+                    "name": "Default",
+                    "dependsOn": [
+                        "[concat('Microsoft.Sql/servers/', parameters('serverName'))]",
+                        "[concat('Microsoft.Sql/servers/', parameters('serverName'), '/securityAlertPolicies/Default')]"
+                    ],
+                    "properties": {
+                        "storageContainerPath": "[if(parameters('enableVA'), concat(reference(resourceId('Microsoft.Storage/storageAccounts', parameters('storageName')),'2021-06-01').primaryEndpoints.blob, 'vulnerability-assessment'), '')]",
+                        "storageAccountAccessKey": "[if(and(parameters('enableVA'),not(parameters('useVAManagedIdentity'))), listKeys(parameters('storageName'), '2018-02-01').keys[0].value, '')]",
+                        "recurringScans": {
+                            "isEnabled": true,
+                            "emailSubscriptionAdmins": true
+                        }
+                    }
+                },
+                {
+                    "type": "virtualNetworkRules",
+                    "apiVersion": "2021-02-01-preview",
+                    "name": "virtualNetworkRuleAks",
+                    "properties": {
+                        "ignoreMissingVnetServiceEndpoint": false,
+                        "virtualNetworkSubnetId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]"
+                    },
+                    "dependsOn": [
+                        "[concat('Microsoft.Sql/servers/', parameters('serverName'))]"
+                    ]
+                },
+                {
+                    "condition": "[parameters('enableAuditing')]",
+                    "type": "auditingSettings",
+                    "apiVersion": "2021-02-01-preview",
+                    "name": "auditingSettings",
+                    "properties": {
+                        "isStorageSecondaryKeyInUse": false,
+                        "retentionDays": "[parameters('auditSettingsRetentionDays')]",
+                        "state": "Enabled",
+                        "storageAccountAccessKey": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageName')), '2019-06-01').keys[0].value]",
+                        "storageAccountSubscriptionId": "[subscription().subscriptionId]",
+                        "storageEndpoint": "[reference(resourceId('Microsoft.Storage/storageAccounts', parameters('storageName')), '2021-06-01').primaryEndpoints.blob]"
+                    },
+                    "dependsOn": [
+                        "[concat('Microsoft.Sql/servers/', parameters('serverName'))]"
+                    ]
+                },
+                {
+                    "name": "ActiveDirectory",
+                    "type": "administrators",
+                    "apiVersion": "2019-06-01-preview",
+                    "properties": {
+                        "administratorType": "ActiveDirectory",
+                        "login": "[parameters('activeDirectoryAdministratorLogin')]",
+                        "sid": "[parameters('activeDirectoryAdministratorObjectId')]",
+                        "tenantId": "[subscription().tenantId]"
+                    },
+                    "dependsOn": [
+                        "[concat('Microsoft.Sql/servers/', parameters('serverName'))]"
+                    ]
+                }
+            ]
+        }
+    ]
+}

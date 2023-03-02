@@ -1,0 +1,47 @@
+--- # ---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-base-bank
+  namespace: cert-manager
+spec:
+  acme:
+    # The ACME server URL
+    server: https://acme-v02.api.letsencrypt.org/directory
+    # Email address used for ACME registration
+    email: tecnologia@evlos4u.com
+    # Name of a secret used to store the ACME account private key
+    privateKeySecretRef:
+      name: letsencrypt-base-bank
+    # Enable the HTTP-01 challenge provider
+    solvers:
+      - http01:
+          ingress:
+            class: addon-http-application-routing
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: base-bank-ingress
+  namespace: aks-evl-base-prd
+  annotations:
+    kubernetes.io/ingress.class: addon-http-application-routing
+    cert-manager.io/cluster-issuer: letsencrypt-bg-bank-api
+    cert-manager.io/acme-challenge-type: http01
+    acme.cert-manager.io/http01-edit-in-place: "true"
+spec:
+  tls:
+    - hosts:
+        - base-bank-ingress.c5c4b26265f840cc8fc5.brazilsouth.aksapp.io
+      secretName: letsencrypt-base-bank
+  rules:
+    - host: base-bank-ingress.c5c4b26265f840cc8fc5.brazilsouth.aksapp.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: base-test-bank-app-k8s
+                port:
+                  number: 80

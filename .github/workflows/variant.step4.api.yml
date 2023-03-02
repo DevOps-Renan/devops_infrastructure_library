@@ -1,0 +1,401 @@
+name: Build and deploy api container to Azure Cloud
+
+on:
+  workflow_call:
+    inputs:
+      CONTAINER_REGISTRY_SERVER:
+        default: evlosregistry.azurecr.io 
+        type: string
+        required: false
+      CONTEXT_PATH:
+        default: ./src/
+        type: string
+        required: false 
+      DEPLOYMENT_SERVICE_PATH:
+        type: string
+        required: true
+      DOCKERFILE_PATH_DEV:
+        type: string
+        required: true
+      DOCKERFILE_PATH_HMG:
+        type: string
+        required: true
+      DOCKERFILE_PATH_PRD:
+        type: string
+        required: true
+      AZURE_RESOURCE_GROUP_K8S:
+        type: string
+        required: true
+      AZURE_CLUSTER_K8S:
+        type: string
+        required: true
+      NAMESPACE_K8S:
+        type: string
+        required: true 
+      DEPLOYMENT_K8S:
+        type: string
+        required: true 
+      SERVICE_K8S: 
+        type: string
+        required: true 
+      IMAGE_NAME_DEV:
+        type: string
+        required: true
+      IMAGE_NAME_HMG:
+        type: string
+        required: true 
+      IMAGE_NAME_PRD:
+        type: string
+        required: true 
+      APP_SERVICE_NAME_DEV:
+        type: string
+        required: true
+      APP_SERVICE_NAME_HMG:
+        type: string
+        required: true
+jobs:
+  deploy-build-development:
+    name: Deploy and build to development
+    environment:
+      name: development
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+    if: github.event.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source repository
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login no Azure Container Registry
+        uses: Azure/docker-login@v1
+        with:
+          username: ${{ secrets.CONTAINER_REGISTRY_USERNAME }}
+          password: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
+          login-server: ${{ inputs.CONTAINER_REGISTRY_SERVER }}
+
+      - name: Build and push container image to registry
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: ${{ inputs.CONTAINER_REGISTRY_SERVER }}/${{ inputs.IMAGE_NAME_DEV }}:${{ github.sha }}
+          context: ${{ inputs.CONTEXT_PATH }}
+          file: ${{ inputs.DOCKERFILE_PATH_DEV }}
+
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ inputs.APP_SERVICE_NAME_DEV }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISH_PROFILE_DEV }}
+          images: ${{ inputs.IMAGE_NAME_DEV }}:${{ github.sha }}
+
+      - name: Ping on Azure Web App Url
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}\n" ${{ steps.deploy-to-webapp.outputs.webapp-url }})
+          if response != 404; then
+            exit 1
+          fi
+
+  deploy-build-homologation:
+    name: Deploy and build to homologation
+    environment:
+      name: homologation
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+    if: github.event.ref == 'refs/heads/hmg'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source repository
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login no Azure Container Registry
+        uses: Azure/docker-login@v1
+        with:
+          username: ${{ secrets.CONTAINER_REGISTRY_USERNAME }}
+          password: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
+          login-server: ${{ inputs.CONTAINER_REGISTRY_SERVER }}
+
+      - name: Build and push container image to registry
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: ${{ inputs.CONTAINER_REGISTRY_SERVER }}/${{ inputs.IMAGE_NAME_HMG }}:${{ github.sha }}
+          context: ${{ inputs.CONTEXT_PATH }}          
+          file: ${{ inputs.DOCKERFILE_PATH_HMG }}
+
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ inputs.APP_SERVICE_NAME_HMG }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISH_PROFILE_HMG }}
+          images: ${{ inputs.IMAGE_NAME_HMG }}:${{ github.sha }}
+
+      - name: Ping on Azure Web App Url
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}\n" ${{ steps.deploy-to-webapp.outputs.webapp-url }})
+          if response != 404; then
+            exit 1
+          fi
+
+  deploy-build-production:
+    name: Deploy and build to production
+    environment:
+      name: production
+    if: github.event.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source repository
+        uses: actions/checkout@v2
+
+      - name: Owner as an output variable
+        uses: actions/github-script@v6
+        id: owner
+        with:
+          script: |
+            return context.repo.owner
+
+      - name: Repo as an output variable
+        uses: actions/github-script@v6
+        id: repo
+        with:
+          script: |
+            return context.repo.repo
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login no Azure Container Registry
+        uses: Azure/docker-login@v1
+        with:
+          username: ${{ secrets.CONTAINER_REGISTRY_USERNAME }}
+          password: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
+          login-server: ${{ inputs.CONTAINER_REGISTRY_SERVER }}
+
+      - name: Build and push container image to registry
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: ${{ inputs.CONTAINER_REGISTRY_SERVER }}/${{ inputs.IMAGE_NAME_PRD }}:${{ github.sha }}
+          context: ${{ inputs.CONTEXT_PATH }}
+          file: ${{ inputs.DOCKERFILE_PATH }}
+
+      - name: Checkout devops_infrastructure_library repository
+        uses: actions/checkout@v2
+        with:
+          repository: evlos4u/devops_infrastructure_library
+          ref: main
+          token: ${{ secrets.EVLOS_ACESS_TOKEN }}
+
+      - name: Get Ip cluster
+        shell: bash
+        run: echo "RUNNER_IP=$(curl https://api.ipify.org)" >> $GITHUB_ENV
+
+      - name: Logging in Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS_SUBSCRIPTION1 }}
+
+      - name: Add runner Ip on cluster
+        shell: pwsh
+        run: |
+          [system.collections.arrayList]$currentIps=@($(az aks show -n ${{ inputs.AZURE_CLUSTER_K8S }} -g ${{ inputs.AZURE_RESOURCE_GROUP_K8S }} --query apiServerAccessProfile.authorizedIpRanges -o tsv))
+          $currentIps.add("${{ env.RUNNER_IP }}")
+          $newIps=$currentIps -join ","
+          az aks update -n ${{ inputs.AZURE_CLUSTER_K8S }} -g ${{ inputs.AZURE_RESOURCE_GROUP_K8S }} --api-server-authorized-ip-ranges $newIps
+
+      - name: Azure Kubernetes Service - Connecting to the cluster
+        uses: Azure/aks-set-context@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS_SUBSCRIPTION1 }}
+          resource-group: ${{ inputs.AZURE_RESOURCE_GROUP_K8S }}
+          cluster-name: ${{ inputs.AZURE_CLUSTER_K8S }}
+
+      - name: Azure Kubernetes Service - Criando Secret para variáveis de ambiente
+        uses: Azure/k8s-create-secret@v1.1
+        with:
+          namespace: ${{ inputs.NAMESPACE_K8S }}
+          secret-type: generic
+          secret-name: env-vars
+          arguments: |
+            --from-literal=connstr=${{ secrets.CONNECTION_STRING_PRD }}
+            --from-literal=conexaoredis=${{ secrets.CONNECTION_STRING_CONEXAOREDIS_PRD }}
+            --from-literal=stsserver=${{ secrets.STS_SERVER }}
+            --from-literal=banklybaseurl=${{ secrets.BANKLY_BASE_URL_PRD }}
+            --from-literal=banklystsserver=${{ secrets.BANKLY_STS_SERVER_PRD }}
+            --from-literal=banklyclientid=${{ secrets.BANKLY_CLIENT_ID_PRD }}
+            --from-literal=banklyclientsecret=${{ secrets.BANKLY_CLIENT_SECRET_PRD }}
+            --from-literal=mtlscompanykey=${{ secrets.MTLS_COMPANY_KEY_PRD }}
+            --from-literal=mtlsclientidname=${{ secrets.MTLS_CLIENT_ID_NAME_PRD }}
+            --from-literal=mtlspassphrasename=${{ secrets.MTLS_PASSPHRASE_NAME_PRD }}
+            --from-literal=mtlscertsecretname=${{ secrets.MTLS_CERT_SECRET_NAME_PRD }}
+            --from-literal=mtlsprivatekeysecretname=${{ secrets.MTLS_PRIVATE_KEY_SECRET_NAME_PRD }}
+            --from-literal=mtlssubjectdnname=${{ secrets.MTLS_SUBJECT_DN_NAME_PRD }}
+            --from-literal=mtlstokensecretname=${{ secrets.MTLS_TOKEN_SECRET_NAME_PRD }}
+            --from-literal=mtlsstsserver=${{ secrets.MTLS_STS_SERVER_PRD }}
+            --from-literal=webhookpublickey=${{ secrets.BANKLY_WEBHOOK_PUBLIC_KEY_PRD }}
+            --from-literal=webhookprivatekey=${{ secrets.BANKLY_WEBHOOK_PRIVATE_KEY_PRD }}
+            --from-literal=calendartoken=${{ secrets.SECURITY_CALENDAR_TOKEN_PRD }} 
+            --from-literal=calendarbaseurl=${{ secrets.SECURITY_CALENDAR_BASEURL_PRD }} 
+            --from-literal=flipconfigurationsbaseurl=${{ secrets.SECURITY_FLIPCONFIGURATIONS_BASEURL_PRD }}
+            --from-literal=flipassignorbaseurl=${{ secrets.SECURITY_FLIPCONFIGURATIONS_ASSIGNOR_PRD }}            
+            --from-literal=flipconfigurationsstsserver=${{ secrets.SECURITY_FLIPCONFIGURATIONS_STSSERVER_PRD }}
+            --from-literal=flipconfigurationsclientid=${{ secrets.SECURITY_FLIPCONFIGURATIONS_CLIENTID_PRD }}
+            --from-literal=flipconfigurationsclientsecret=${{ secrets.SECURITY_FLIPCONFIGURATIONS_CLIENTSECRET_PRD }}
+            --from-literal=flipconfigurationsscopes=${{ secrets.SECURITY_FLIPCONFIGURATIONS_SCOPES_PRD }}
+            --from-literal=flipconfigurationsusername=${{ secrets.SECURITY_FLIPCONFIGURATIONS_USERNAME_PRD }}
+            --from-literal=flipconfigurationspassword=${{ secrets.SECURITY_FLIPCONFIGURATIONS_PASSWORD_PRD }}
+            --from-literal=flipconfigurationsexpires=${{ secrets.SECURITY_FLIPCONFIGURATIONS_EXPIRES_PRD }}
+            --from-literal=salesforceconfigurationsbaseurl=${{ secrets.SECURITY_SALESFORCECONFIGURATION_BASEURL_PRD }}
+            --from-literal=salesforceconfigurationclientid=${{ secrets.SECURITY_SALESFORCECONFIGURATION_CLIENTID_PRD }}
+            --from-literal=salesforceconfigurationspassword=${{ secrets.SECURITY_SALESFORCECONFIGURATION_CLIENTSECRET_PRD }}
+            --from-literal=salesforceconfigurationssts=${{ secrets.SECURITY_SALESFORCECONFIGURATION_STS_PRD }}
+            --from-literal=salesforceconfigurationsusername=${{ secrets.SECURITY_SALESFORCECONFIGURATION_USERNAME_PRD }}
+            --from-literal=salesforceconfigurationsownerusername=${{ secrets.SECURITY_SALESFORCECONFIGURATION_OWNERUSERNAME_PRD }}
+            --from-literal=bankingjwttokensettingskey=${{ secrets.BANKING_JWTTOKENSETTINGS_KEY_PRD }}
+            --from-literal=bankingjwttokensettingsissuer=${{ secrets.BANKING_JWTTOKENSETTINGS_ISSUER_PRD }}
+            --from-literal=adminjwttokensettingskey=${{ secrets.ADMIN_JWTTOKENSETTINGS_KEY_PRD }}
+            --from-literal=adminjwttokensettingsissuer=${{ secrets.ADMIN_JWTTOKENSETTINGS_ISSUER_PRD }}
+            --from-literal=conciliationjwttokensettingskey=${{ secrets.CONCILIATION_JWTTOKENSETTINGS_KEY_PRD }}
+            --from-literal=conciliationjwttokensettingsissuer=${{ secrets.CONCILIATION_JWTTOKENSETTINGS_ISSUER_PRD }}
+            --from-literal=accountofficerjwttokensettingskey=${{ secrets.ACCOUNTOFFICER_JWTTOKENSETTINGS_KEY_PRD }}
+            --from-literal=remessaonlineclientid=${{ secrets.REMESSAONLINE_CLIENTID_PRD }}
+            --from-literal=remessaonlineclientsecret=${{ secrets.REMESSAONLINE_CLIENTSECRET_PRD }}
+            --from-literal=remessaonlinextoken=${{ secrets.REMESSAONLINE_XTOKEN_PRD }}
+            --from-literal=accountofficerjwttokensettingsexpiration=${{ secrets.ACCOUNTOFFICER_JWTTOKENSETTINGS_EXPIRATION_PRD }}
+            --from-literal=accountofficerjwttokensettingsissuer=${{ secrets.ACCOUNTOFFICER_JWTTOKENSETTINGS_ISSUER_PRD }}
+            --from-literal=passwordsettingshistory=${{ secrets.PASSWORDSETTINGS_HISTORYAGE_PRD }}
+            --from-literal=passwordsettingsexpiration=${{ secrets.PASSWORDSETTINGS_EXPIRATIONDAYS_PRD }}
+            --from-literal=passwordsettingsattemps=${{ secrets.PASSWORDSETTINGS__ATTEMPSLIMIT_PRD }}
+            --from-literal=usersettingsmaximuminactivedays=${{ secrets.USERSETTINGS_MAXIMUM_INACTIVEDAYS_PRD }}
+            --from-literal=emailsettingsprimarydomain=${{ secrets.EMAILSETTINGS_PRIMARYDOMAIN_PRD }}
+            --from-literal=emailsettingsprimaryport=${{ secrets.EMAILSETTINGS_PRIMARYPORT_PRD }}
+            --from-literal=emailsettingsfromemail=${{ secrets.EMAILSETTINGS_FROMEMAIL_PRD }}
+            --from-literal=emailsettingsfrompassword=${{ secrets.EMAILSETTINGS_FROMPASSWORD_PRD }}
+            --from-literal=emailsettingsfromuser=${{ secrets.EMAILSETTINGS_FROMUSER_PRD }}
+            --from-literal=emailsettingstemplatepath=${{ secrets.EMAILSETTINGS_TEMPLATEPATH_PRD }}
+            --from-literal=emailsettingsattedance=${{ secrets.EMAILSETTINGS_ATTENDENCE_PRD }}
+            --from-literal=applicationsettingsinstancenameredis=${{ secrets.APPLICATIONSETTINGS_INSTANCEREDISNAME_PRD }}
+            --from-literal=applicationsettingsdefaultbankshortname=${{ secrets.APPLICATIONSETTINGS_BANKSHORTNAME_PRD }}
+            --from-literal=applicationsettingsdefaultbankcode=${{ secrets.APPLICATIONSETTINGS_DEFAULTBANKCODE_PRD }}
+            --from-literal=applicationsettingsdefaultbranch=${{ secrets.APPLICATIONSETTINGS_DEFAULTBRANCH_PRD }}
+            --from-literal=applicationsettingsdefaultispb=${{ secrets.APPLICATIONSETTINGS_DEFAULTISPB_PRD }}
+            --from-literal=applicationsettingstemplatereceiptpath=${{ secrets.APPLICATIONSETTINGS_TEMPLATERECEIPTPATH_PRD }}
+            --from-literal=frontoriginvalue=${{ secrets.APPLICATIONSETTINGS_FRONT_ORIGIN_VALUE }}
+            --from-literal=frontorigindescription=${{ secrets.APPLICATIONSETTINGS_FRONT_ORIGIN_DESCRIPTION }}
+            --from-literal=applicationsettingsconciliationpanelurl=${{ secrets.APPLICATIONSETTINGS_CONCILIATIONPANELURL_PRD }}
+            --from-literal=adminweburl=${{ secrets.APPLICATIONSETTINGS_ADMINWEBURL_PRD }}
+            --from-literal=applicationsettingsadminexpirationspassword=${{ secrets.APPLICATIONSETTINGS_ADMINEXPIRATIONPASSWORD_PRD }}
+            --from-literal=applicationsettingsurlwhatsapp=${{ secrets.APPLICATIONSETTINGS_URLWHATSAPP_PRD }}
+            --from-literal=applicationsettingsaccountofficerpanelurl=${{ secrets.APPLICATIONSETTINGS_ACCOUNTOFFICERPANELURL_PRD }}
+            --from-literal=applicationsettingsconciliationconfigurationpanelurl=${{ secrets.APPLICATIONSETTINGS_CONCILIATIONPANELURL_PRD }}
+            --from-literal=applicationsettingsconciliationauthscope=${{ secrets.APPLICATIONSETTINGS_CONCILIATIONAUTHSCOPE_PRD }}
+            --from-literal=applicationsettingsconciliationpaymenturl=${{ secrets.APPLICATIONSETTINGS_CONCILIATIONPAYMENTURL_PRD }} 
+            --from-literal=applicationsettingsoboardingwebhookurl=${{ secrets.APPLICATIONSETTINGS_ONBOARDINGWEBHOOKURL_PRD }}
+            --from-literal=applicationsettingsdebitauthscope=${{ secrets.APPLICATIONSETTINGS_DEBITAUTHSCOPE_PRD }}
+            --from-literal=applicationsettingscustomersupportemail=${{ secrets.APPLICATIONSETTINGS_CUSTOMERSUPPORTEMAIL_PRD }}
+            --from-literal=azureblobcontainer=${{ secrets.AZURE_BLOB_CONTAINER_PRD }}
+            --from-literal=azureaccountname=${{ secrets.AZURE_ACCOUNT_NAME_PRD }}
+            --from-literal=azureaccountkey=${{ secrets.AZURE_ACCOUNT_KEY_PRD }}
+            --from-literal=azurevaulturi=${{ secrets.AZURE_STORAGESETTINGS_VAULT_URI_PRD }}
+            --from-literal=azurevaultclientid=${{ secrets.AZURE_STORAGESETTINGS_VAULT_CLIENT_ID_PRD }}
+            --from-literal=azurevaultclientsecret=${{ secrets.AZURE_STORAGESETTINGS_VAULT_CLIENT_SECRET_PRD }}
+            --from-literal=admintwofactorauthenticationkey=${{ secrets.ADMIN_TWOFACTORAUTHENTICATION_KEY }}
+            --from-literal=admintwofactorauthenticationname=${{ secrets.ADMIN_TWOFACTORAUTHENTICATION_NAME }}
+            --from-literal=admintwofactorauthenticationperiod=${{ secrets.ADMIN_TWOFACTORAUTHENTICATION_PERIOD }}
+            --from-literal=admintwofactorauthenticationalgorithm=${{ secrets.ADMIN_TWOFACTORAUTHENTICATION_ALGORITHM }}
+            --from-literal=admintwofactorauthenticationdigits=${{ secrets.ADMIN_TWOFACTORAUTHENTICATION_DIGITS }}
+            --from-literal=usertwofactorauthenticationkey=${{ secrets.USER_TWOFACTORAUTHENTICATION_KEY }}
+            --from-literal=usertwofactorauthenticationname=${{ secrets.USER_TWOFACTORAUTHENTICATION_NAME }}
+            --from-literal=usertwofactorauthenticationperiod=${{ secrets.USER_TWOFACTORAUTHENTICATION_PERIOD }}
+            --from-literal=usertwofactorauthenticationalgorithm=${{ secrets.USER_TWOFACTORAUTHENTICATION_ALGORITHM }}
+            --from-literal=usertwofactorauthenticationdigits=${{ secrets.USER_TWOFACTORAUTHENTICATION_DIGITS }}
+            --from-literal=elasticsearchuri=${{ secrets.ELASTICSEARCH_URI_PRD }}
+
+      - name: Azure Kubernetes Service - Creating namespace
+        run: 
+          kubectl create namespace ${{ inputs.NAMESPACE_K8S }}
+        continue-on-error: true
+
+      - name: Azure Kubernetes Service - Deployment de Web App
+        run: |
+          filename=${{ inputs.DEPLOYMENT_SERVICE_PATH }}    
+          sed -i "s|IMAGE_NAME|${{ inputs.IMAGE_NAME_PRD }}|" $filename
+          sed -i "s|latest|${{ github.sha }}|" $filename
+          sed -i "s|DEPLOYMENT_K8S|${{ inputs.DEPLOYMENT_K8S }}|" $filename
+          sed -i "s|SERVICE_K8S|${{ inputs.SERVICE_K8S }}|" $filename
+          kubectl apply -n ${{ inputs.NAMESPACE_K8S }} -f $filename;
+          
+      - name: Azure Kubernetes Service - Checking Deployment Status and Rollback if Deployment fail
+        run: |
+          if ! kubectl rollout status deployment ${{ inputs.DEPLOYMENT_K8S }} -n ${{ inputs.NAMESPACE_K8S }}; then
+            list_pods_failed=$(kubectl get pods -n ${{ inputs.NAMESPACE_K8S }} | grep -Ev '([0-9]+)/\1')
+            string_pods_failed=""
+            for str in ${list_pods_failed[@]}; do 
+              if [[ "$str" = *${{ inputs.DEPLOYMENT_K8S }}* ]]; then 
+                string_pods_failed+=$str
+                string_pods_failed+=" "
+              fi;
+            done
+            kubectl describe pods $string_pods_failed -n ${{ inputs.NAMESPACE_K8S }}
+            kubectl rollout undo deployment ${{ inputs.DEPLOYMENT_K8S }} -n ${{ inputs.NAMESPACE_K8S }};
+            kubectl rollout status deployment ${{ inputs.DEPLOYMENT_K8S }} -n ${{ inputs.NAMESPACE_K8S }};
+            exit 1
+          fi
+
+      - name: Creating Release Notes        
+        uses: actions/github-script@v6
+        with:
+          script: |
+            try {
+              const last_tag_json = await github.request('GET /repos/{owner}/{repo}/releases/latest', {
+                owner: ${{ steps.owner.outputs.result }},
+                repo: ${{steps.repo.outputs.result}}
+              })
+              const last_tag_array = last_tag_json.data.tag_name.split('')
+              last_tag_array.shift()
+              const last_tag_number = last_tag_array.join('') 
+              const release = await github.request('POST /repos/{owner}/{repo}/releases', {
+                owner: ${{ steps.owner.outputs.result }},
+                repo: ${{steps.repo.outputs.result}},
+                tag_name: 'v'+ (parseFloat(last_tag_number) + parseFloat("0.1")).toFixed(1),
+                name: 'v'+ (parseFloat(last_tag_number) + parseFloat("0.1")).toFixed(1),
+                target_commitish: 'main',
+                generate_release_notes: true
+              })
+              const release_note = await github.request('POST /repos/{owner}/{repo}/releases/generate-notes', {
+                owner: ${{ steps.owner.outputs.result }},
+                repo: ${{steps.repo.outputs.result}},
+                tag_name: 'v'+ (parseFloat(last_tag_number) + parseFloat("0.1")).toFixed(1),
+                target_commitish: 'main',
+                previous_tag_name: 'v'+ (parseFloat(last_tag_number)).toFixed(1),
+              })
+            }
+            catch(error) {
+              await github.request('POST /repos/{owner}/{repo}/releases', {
+                owner: ${{ steps.owner.outputs.result }},
+                repo: ${{steps.repo.outputs.result}},      
+                tag_name: 'v1.0',
+                name: 'v1.0',
+                target_commitish: 'main',
+                generate_release_notes: true
+              }) 
+              await github.request('POST /repos/{owner}/{repo}/releases/generate-notes', {
+                owner: ${{ steps.owner.outputs.result }},
+                repo: ${{steps.repo.outputs.result}},      
+                tag_name: 'v1.0',
+                target_commitish: 'main',
+                previous_tag_name: 'v1.0',
+              })      
+            }
+      - name: Remove runner Ip on cluster
+        shell: pwsh
+        run: |
+          [system.collections.arrayList]$currentIps=@($(az aks show -n ${{ inputs.AZURE_CLUSTER_K8S }} -g ${{ inputs.AZURE_RESOURCE_GROUP_K8S }} --query apiServerAccessProfile.authorizedIpRanges -o tsv))
+          $currentIps.remove("${{ env.RUNNER_IP }}/32")
+          $newIps=$currentIps -join ","
+          az aks update -n ${{ inputs.AZURE_CLUSTER_K8S }} -g ${{ inputs.AZURE_RESOURCE_GROUP_K8S }} --api-server-authorized-ip-ranges $newIps

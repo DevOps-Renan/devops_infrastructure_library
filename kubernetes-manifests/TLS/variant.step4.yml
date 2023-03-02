@@ -1,0 +1,72 @@
+--- # ---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-step4-bank
+  namespace: cert-manager
+spec:
+  acme:
+    # The ACME server URL
+    server: https://acme-v02.api.letsencrypt.org/directory
+    # Email address used for ACME registration
+    email: tecnologia@evlos4u.com
+    # Name of a secret used to store the ACME account private key
+    privateKeySecretRef:
+      name: letsencrypt-step4-bank
+    # Enable the HTTP-01 challenge provider
+    solvers:
+      - http01:
+          ingress:
+            class: azure/application-gateway
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: base-step4-ingress
+  namespace: aks-evl-step4-prd
+  annotations:
+    kubernetes.io/ingress.class: azure/application-gateway
+    cert-manager.io/cluster-issuer: letsencrypt-step4-bank
+    cert-manager.io/acme-challenge-type: http01
+    acme.cert-manager.io/http01-edit-in-place: "true"
+    appgw.ingress.kubernetes.io/ssl-redirect: "true"
+    appgw.ingress.kubernetes.io/request-timeout: "120"
+spec:
+  tls:
+    - hosts:
+        - app.step4business.com.br
+        - api.step4business.com.br
+        - painel.step4business.com.br
+
+      secretName: letsencrypt-step4-bank
+  rules:
+    - host: app.step4business.com.br
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: step4-bank-app-k8s
+                port:
+                  number: 80
+    - host: api.step4business.com.br
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: step4-bank-api-k8s
+                port:
+                  number: 80
+    - host: painel.step4business.com.br
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: servico-step4-admin-web-k8s
+                port:
+                  number: 80

@@ -1,0 +1,75 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "addressSpaces": {
+            "type": "array"
+        },
+        "ddosProtectionPlanEnabled": {
+            "type": "bool"
+        },
+        "subnetAgwAddressRange": {
+            "type": "string"
+        },
+        "subnetAgwName": {
+            "type": "string"
+        },
+        "subnetAksAddressRange": {
+            "type": "string"
+        },
+        "subnetAksName": {
+            "type": "string"
+        },
+        "tags": {
+            "type": "object"
+        },
+        "virtualNetworkName": {
+            "type": "string"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "name": "[parameters('virtualNetworkName')]",
+            "type": "Microsoft.Network/VirtualNetworks",
+            "apiVersion": "2021-01-01",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [],
+            "tags": "[parameters('tags')]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": "[parameters('addressSpaces')]"
+                },
+                "subnets": [
+                    {
+                        "name": "[parameters('subnetAksName')]",
+                        "properties": {
+                            "serviceEndpoints": [
+                                {
+                                    "locations": [
+                                        "[resourceGroup().location]"
+                                    ],
+                                    "service": "Microsoft.Sql"
+                                },
+                                {
+                                    "locations": [
+                                        "[resourceGroup().location]"
+                                    ],
+                                    "service": "Microsoft.Storage"
+                                }
+                            ],
+                            "addressPrefix": "[parameters('subnetAksAddressRange')]"
+                        }
+                    },
+                    {
+                        "name": "[parameters('subnetAgwName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnetAgwAddressRange')]"
+                        }
+                    }
+                ],
+                "enableDdosProtection": "[parameters('ddosProtectionPlanEnabled')]"
+            }
+        }
+    ]
+}

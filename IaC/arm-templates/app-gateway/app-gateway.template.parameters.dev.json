@@ -1,0 +1,62 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "applicationGatewayName": {
+            "value": "agw-evl-base-dev"
+        },
+        "tier": {
+            "value": "WAF_v2"
+        },
+        "skuSize": {
+            "value": "WAF_v2"
+        },
+        "capacity": {
+            "value": 1
+        },
+        "subnetName": {
+            "value": "subnet-waf"
+        },
+        "zones": {
+            "value": []
+        },
+        "publicIpAddressName": {
+            "value": "pip-agw-evl-base-dev"
+        },
+        "sku": {
+            "value": "Standard"
+        },
+        "allocationMethod": {
+            "value": "Static"
+        },
+        "vnetName": {
+            "value": "vnet-evl-base-dev"
+        },
+        "tags": {
+            "value": {
+                "env": "dev"
+            }
+        },
+        "diagnosticLogsSettingsEnabled": {
+            "value": true
+        },
+        "diagnosticLogsRetentionDays": {
+            "value": 7
+        },
+        "logsStorageAccountName": {
+            "value": "stglogsevlbasedev"
+        },
+        "wafEnabled": {
+            "value": true
+        },
+        "wafMode": {
+            "value": "Prevention"
+        },
+        "wafRuleSetType": {
+            "value": "OWASP"
+        },
+        "wafRuleSetVersion": {
+            "value": "3.0"
+        }
+    }
+}

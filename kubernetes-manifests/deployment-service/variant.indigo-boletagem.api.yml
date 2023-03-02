@@ -1,0 +1,217 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: DEPLOYMENT_K8S
+  labels:
+    app: DEPLOYMENT_K8S
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: DEPLOYMENT_K8S
+  template:
+    metadata:
+      labels:
+        app: DEPLOYMENT_K8S
+    spec:
+      containers:
+        - name: DEPLOYMENT_K8S
+          image: evlosregistry.azurecr.io/IMAGE_NAME:latest
+          ports:
+            - containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /index.html
+              port: 80
+            periodSeconds: 3
+            timeoutSeconds: 30              
+          env:
+            - name: "ConnectionString__SecurityDataContext"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: connstr
+            - name: "ConnectionString__TicketsDataContext"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: connstr
+            - name: "ConnectionString__WorkflowDataContext"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: connstr
+            - name: "ConnectionString__FilesDataContext"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: connstr
+            - name: "ConnectionString__CutoffDataContext"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: connstr
+            - name: "ConnectionString__ReceivableDataContext"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: connstr
+            - name: "ConnectionString__ConexaoRedis"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: conexaoredis                  
+            - name: "Security__JWTTokenSettings__Key"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: jwttokensettingskey
+            - name: "Security__IndigoGatewayClient__BaseUrl"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: indigogatewayclienturl                 
+            - name: "ElasticConfiguration__Uri"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: elasticsearchuri
+#Secret Ticket
+            - name: "Ticket__MailingLists__Santander__Recipient"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: mailinglistssantanderrecipient
+            - name: "Ticket__MailingLists__Santander__Copy"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: mailinglistssantandercopy                                      
+#Secret Azure Blob Storage   
+            - name: "Azure__StorageSettings__DocContainer"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: azureblobcontainerdocument               
+            - name: "Azure__StorageSettings__BlobContainer"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: azureblobcontainer
+            - name: "Azure__StorageSettings__AccountName"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: azureaccountname
+            - name: "Azure__StorageSettings__AccountKey"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: azureaccountkey
+#Secret Minicom token               
+            - name: "MinicomSettings__TransferTokenKey"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: transfertokenkey
+#Secret Email                  
+            - name: "Security__EmailSettings__PrimaryDomain"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: emailsettingsprimarydomain
+            - name: "Security__EmailSettings__PrimaryPort"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: emailsettingsprimaryport
+            - name: "Security__EmailSettings__FromEmail"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: emailsettingsfromemail
+            - name: "Security__EmailSettings__FromPassword"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: emailsettingsfrompassword
+            - name: "Security__EmailSettings__FromUser"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: emailsettingsfromuser
+#Secret Application Settings
+            - name: "Security__ApplicationSettings__Url"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: applicationsettingsurl
+            - name: "Security__ApplicationSettings__SovereignActive"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: applicationsettingssovereignactive                                
+            - name: "Security__ApplicationSettings__SovereignDocument"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: applicationsettingssovereigndocument
+            - name: "Security__ApplicationSettings__DefaultAdministrator"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: applicationsettingsdefaultadministrator
+            - name: "Security__ApplicationSettings__DefaultBankCode"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: applicationsettingsdefaultbankcode
+#Secret MinicomSettings
+            - name: "MinicomSettings__BaseUrl"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: minicombaseurl
+            - name: "MinicomSettings__UserName"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: minicomusername  
+            - name: "MinicomSettings__Password"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: minicompassword
+            - name: "MinicomSettings__DocumentNumber"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: minicomdocumentnumber
+            - name: "MinicomSettings__AccountNumber"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: minicomaccountnumber
+            - name: "MinicomSettings__Integrator__UserName"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: minicomintregatorusername
+            - name: "MinicomSettings__Integrator__Password"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: minicomintregatorpassword
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: SERVICE_K8S
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 80
+  selector:
+    app: DEPLOYMENT_K8S

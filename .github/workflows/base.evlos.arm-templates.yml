@@ -1,0 +1,242 @@
+name: prd-deployment
+
+on:
+  push:
+    branches: [aplicar aqui a branch]
+    # [main]
+  # schedule:
+  #   - cron: "0 10 * * *"
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'     
+        required: true
+        default: 'warning'
+      tags:
+        description: 'Test scenario tags'      
+env:
+  # Adicionar o nome do ResourceGroup
+  AZURE_RG: rg-evl-evlos-prd
+  APP_GATEWAY: agw-evl-evlos-prd
+  AZURE_CLUSTER_K8S: aks-evl-evlos-prd
+
+jobs:
+  app-service-deployment:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@main
+
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS_SUBSCRIPTION1 }}
+      
+      - name: salesforceconfigurationclientid
+        run: |
+          appservicename
+          appserviceplanname
+          resourcegroup
+          filename=${{ inputs.DEPLOYMENT_SERVICE_PATH }}       
+          sed -i "s/latest/${{ github.sha }}/" $filename
+          sed -i "s/base/${{ inputs.CLIENT_NAME }}/" $filename
+          sed -i "s/env/prd/" $filename          
+
+      - name: Deploy app-service
+        uses: azure/arm-deploy@v1
+        with:
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION1 }}
+          resourceGroupName: ${{ env.AZURE_RG }}
+          template: arm-templates/virtual-network/virtual-network.template.json
+          parameters: arm-templates/virtual-network/virtual-network.template.parameters.prd.json
+          deploymentName: AppServiceDeployment-${{ github.workflow }}-${{ github.run_number }}
+
+  #     - name: Deploy resource-group
+  #       run: az group create -n ${{ env.AZURE_RG }} -l brazilsouth
+
+      - name: Deploy app-service-plan
+        uses: azure/arm-deploy@v1
+        with:
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION1 }}
+          resourceGroupName: ${{ env.AZURE_RG }}
+          template: arm-templates/virtual-network/virtual-network.template.json
+          parameters: arm-templates/virtual-network/virtual-network.template.parameters.prd.json
+          deploymentName: AppServicePlanDeployment-${{ github.workflow }}-${{ github.run_number }}
+
+  #     - name: Deploy virtual-network
+  #       uses: azure/arm-deploy@v1
+  #       with:
+  #         subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION1 }}
+  #         resourceGroupName: ${{ env.AZURE_RG }}
+  #         template: arm-templates/virtual-network/virtual-network.template.json
+  #         parameters: arm-templates/virtual-network/virtual-network.template.parameters.prd.json
+  #         deploymentName: VirtualNetworkDeployment-${{ github.workflow }}-${{ github.run_number }}
+
+  #     - name: Deploy storage-account
+  #       uses: azure/arm-deploy@v1
+  #       with:
+  #         subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION1 }}
+  #         resourceGroupName: ${{ env.AZURE_RG }}
+  #         template: arm-templates/storage-account/storage-account.template.json
+  #         parameters: arm-templates/storage-account/storage-account.template.parameters.prd.json
+  #         deploymentName: StorageAccountDeployment-${{ github.workflow }}-${{ github.run_number }}
+
+  #     - name: Deploy storage-account-logs
+  #       uses: azure/arm-deploy@v1
+  #       with:
+  #         subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION1 }}
+  #         resourceGroupName: ${{ env.AZURE_RG }}
+  #         template: arm-templates/storage-account/storage-account.template.json
+  #         parameters: arm-templates/storage-account/storage-account-logs.template.parameters.prd.json
+  #         deploymentName: StorageAccountLogsDeployment-${{ github.workflow }}-${{ github.run_number }}
+
+  #     - name: Deploy storage-account-function
+  #       uses: azure/arm-deploy@v1
+  #       with:
+  #         subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION1 }}
+  #         resourceGroupName: ${{ env.AZURE_RG }}
+  #         template: arm-templates/storage-account/storage-account.template.json
+  #         parameters: arm-templates/storage-account/storage-account-func.template.parameters.prd.json
+  #         deploymentName: StorageAccountFuncDeployment-${{ github.workflow }}-${{ github.run_number }}
+
+  #     - name: Deploy sql-server
+  #       uses: azure/arm-deploy@v1
+  #       with:
+  #         subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION1 }}
+  #         resourceGroupName: ${{ env.AZURE_RG }}
+  #         template: arm-templates/sql-server/sql-server.template.json
+  #         parameters: arm-templates/sql-server/sql-server.template.parameters.prd.json administratorLoginPassword=${{ secrets.SQL_SERVER_ADMIN_PASSWORD_PRD }}
+  #         deploymentName: SqlServerDeployment-${{ github.workflow }}-${{ github.run_number }}
+
+  #     - name: Deploy sql-database
+  #       uses: azure/arm-deploy@v1
+  #       with:
+  #         subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION1 }}
+  #         resourceGroupName: ${{ env.AZURE_RG }}
+  #         template: arm-templates/sql-database/sql-database.template.json
+  #         parameters: arm-templates/sql-database/sql-database.template.parameters.prd.json
+  #         deploymentName: SqlDatabaseDeployment-${{ github.workflow }}-${{ github.run_number }}
+
+  #     - name: Get app-gateway (false = continua deploy / true = não altera AppGateway)
+  #       id: check-app-gateway
+  #       shell: bash
+  #       run: |
+  #         HAS_APPGATEWAY=$(az network application-gateway show -n ${{ env.APP_GATEWAY }} -g ${{ env.AZURE_RG }} --query name -o tsv);
+  #         if ["$HAS_APPGATEWAY"==""]; then 
+  #           echo ::set-output name=HAS_APPGATEWAY::false
+  #         else
+  #           echo ::set-output name=HAS_APPGATEWAY::true
+  #         fi
+  #       continue-on-error: true
+
+  #     - name: Deploy app-gateway
+  #       uses: azure/arm-deploy@v1
+  #       if: ${{!steps.check-app-gateway.outputs.HAS_APPGATEWAY}}
+  #       with:
+  #         subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION1 }}
+  #         resourceGroupName: ${{ env.AZURE_RG }}
+  #         template: arm-templates/app-gateway/app-gateway.template.json
+  #         parameters: arm-templates/app-gateway/app-gateway.template.parameters.prd.json
+  #         deploymentName: AppGatewayDeployment-${{ github.workflow }}-${{ github.run_number }}
+
+  #     - name: Deploy application-insights
+  #       uses: azure/arm-deploy@v1
+  #       with:
+  #         subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION1 }}
+  #         resourceGroupName: ${{ env.AZURE_RG }}
+  #         template: arm-templates/application-insights/application-insights.template.json
+  #         parameters: arm-templates/application-insights/application-insights.template.parameters.prd.json
+  #         deploymentName: ApplicationInsightsDeployment-${{ github.workflow }}-${{ github.run_number }}
+
+  #     - name: Deploy app-service-plan
+  #       uses: azure/arm-deploy@v1
+  #       with:
+  #         subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION1 }}
+  #         resourceGroupName: ${{ env.AZURE_RG }}
+  #         template: arm-templates/app-function/app-service-plan.template.json
+  #         parameters: arm-templates/app-function/app-service-plan.template.parameters.prd.json
+  #         deploymentName: AppServicePlanDeployment-${{ github.workflow }}-${{ github.run_number }}
+
+  #     - name: Deploy app-function
+  #       uses: azure/arm-deploy@v1
+  #       with:
+  #         subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION1 }}
+  #         resourceGroupName: ${{ env.AZURE_RG }}
+  #         template: arm-templates/app-function/app-function.template.json
+  #         parameters: arm-templates/app-function/app-function.template.parameters.prd.json
+  #         deploymentName: AppFunctionDeployment-${{ github.workflow }}-${{ github.run_number }}
+
+  #     - name: Deploy log-analytics
+  #       uses: azure/arm-deploy@v1
+  #       with:
+  #         subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION1 }}
+  #         resourceGroupName: ${{ env.AZURE_RG }}
+  #         template: arm-templates/log-analytics/log-analytics.template.json
+  #         parameters: arm-templates/log-analytics/log-analytics.template.parameters.prd.json
+  #         deploymentName: LogAnalyticDeployment-${{ github.workflow }}-${{ github.run_number }}
+
+  #     - name: Deploy aks
+  #       uses: azure/arm-deploy@v1
+  #       with:
+  #         subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION1 }}
+  #         resourceGroupName: ${{ env.AZURE_RG }}
+  #         template: arm-templates/aks/aks.template.json
+  #         parameters: arm-templates/aks/aks.template.parameters.prd.json
+  #         deploymentName: AksDeployment-${{ github.workflow }}-${{ github.run_number }}
+
+  # config-aks:
+  #   needs: infra-deployment
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - uses: actions/checkout@v2
+
+  #     - name: Get Ip cluster
+  #       shell: bash
+  #       run: echo "RUNNER_IP=$(curl https://api.ipify.org)" >> $GITHUB_ENV
+
+  #     - uses: azure/login@v1
+  #       with:
+  #         creds: ${{ secrets.AZURE_CREDENTIALS_SUBSCRIPTION1 }}
+
+  #     - name: Add runner Ip on cluster
+  #       shell: pwsh
+  #       run: |
+  #         [system.collections.arrayList]$currentIps=@($(az aks show -n ${{env.AZURE_CLUSTER_K8S}} -g ${{env.AZURE_RG}} --query apiServerAccessProfile.authorizedIpRanges -o tsv))
+  #         $currentIps.add("${{env.RUNNER_IP}}")
+  #         $newIps=$currentIps -join ","
+  #         az aks update -n ${{env.AZURE_CLUSTER_K8S}} -g ${{env.AZURE_RG}} --api-server-authorized-ip-ranges $newIps
+
+  #     - name: Azure Kubernetes Service - Set Context - Connect Cluster
+  #       uses: Azure/aks-set-context@v1
+  #       with:
+  #         creds: ${{ secrets.AZURE_CREDENTIALS_SUBSCRIPTION1 }}
+  #         resource-group: ${{ env.AZURE_RG }}
+  #         cluster-name: ${{ env.AZURE_CLUSTER_K8S }}
+
+  #     - name: kubectl - Install Cert-manager
+  #       run: kubectl apply -f kubernetes-config/Cert-manager.yaml
+
+  #     - uses: azure/setup-helm@v3
+  #       with:
+  #         version: "latest"
+  #         token: ${{ secrets.GITHUB_TOKEN }} # only needed if version is 'latest'
+  #       id: install
+
+  #     - name: kubectl - Update Azure-Marketplace
+  #       run: helm repo add azure-marketplace https://marketplace.azurecr.io/helm/v1/repo
+  #       continue-on-error: true
+
+  #     - name: kubectl - Helm Update
+  #       run: helm repo update
+  #       continue-on-error: true
+
+  #     - name: kubectl - Install Redis
+  #       run: helm install redis-cache azure-marketplace/redis --set global.redis.password=${{ secrets.REDIS_PASSWORD_PRD }}
+  #       continue-on-error: true
+
+  #     - name: Remove runner Ip on cluster
+  #       shell: pwsh
+  #       run: |
+  #         [system.collections.arrayList]$currentIps=@($(az aks show -n ${{env.AZURE_CLUSTER_K8S}} -g ${{env.AZURE_RG}} --query apiServerAccessProfile.authorizedIpRanges -o tsv))
+  #         $currentIps.remove("${{env.RUNNER_IP}}/32")
+  #         $newIps=$currentIps -join ","
+  #         az aks update -n ${{env.AZURE_CLUSTER_K8S}} -g ${{env.AZURE_RG}} --api-server-authorized-ip-ranges $newIps

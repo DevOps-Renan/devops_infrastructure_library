@@ -1,0 +1,53 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "allowAzureIps": {
+            "value": false
+        },
+        "administratorLogin": {
+            "value": "plataformabase-admin"
+        },
+        "administratorLoginPassword": {
+            "value": null
+        },
+        "enableADS": {
+            "value": false
+        },
+        "serverName": {
+            "value": "sql-evl-base-dev"
+        },
+        "enableVA": {
+            "value": false
+        },
+        "useVAManagedIdentity": {
+            "value": false
+        },
+        "tags": {
+            "value": {
+                "env": "dev"
+            }
+        },
+        "storageName": {
+            "value": "stglogsevlbasedev"
+        },
+        "vnetName": {
+            "value": "vnet-evl-base-dev"
+        },
+        "subnetName": {
+            "value": "subnet-aks"
+        },
+        "auditSettingsRetentionDays": {
+            "value": 0
+        },
+        "enableAuditing": {
+            "value": false
+        },
+        "activeDirectoryAdministratorLogin": {
+            "value": "evlos Administrators"
+        },
+        "activeDirectoryAdministratorObjectId": {
+            "value": "469affdd-ae48-4b3f-a385-2bac1a1b4935"
+        }
+    }
+}

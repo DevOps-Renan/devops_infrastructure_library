@@ -1,0 +1,52 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "value": "kv-evl-evlos-hmg"
+        },
+        "sku": {
+            "value": "Standard"
+        },
+        "accessPolicies": {
+            "value": []
+        },
+        "tenant": {
+            "value": "818704fb-8ff3-4d28-9a05-f542c91abe46"
+        },
+        "enabledForDeployment": {
+            "value": false
+        },
+        "enabledForTemplateDeployment": {
+            "value": false
+        },
+        "enabledForDiskEncryption": {
+            "value": false
+        },
+        "enableRbacAuthorization": {
+            "value": true
+        },
+        "publicNetworkAccess": {
+            "value": "Enabled"
+        },
+        "enableSoftDelete": {
+            "value": true
+        },
+        "softDeleteRetentionInDays": {
+            "value": 90
+        },
+        "networkAcls": {
+            "value": {
+                "defaultAction": "deny",
+                "bypass": "AzureServices",
+                "ipRules": [],
+                "virtualNetworkRules": [
+                    {
+                        "id": "/subscriptions/0b84aeb3-3723-42d4-b77a-6d8b2bb3353a/resourceGroups/rg-evl-evlos-hmg/providers/Microsoft.Network/virtualNetworks/vnet-evl-evlos-hmg/subnets/subnet-aks",
+                        "ignoreMissingVnetServiceEndpoint": false
+                    }
+                ]
+            }
+        }
+    }
+}

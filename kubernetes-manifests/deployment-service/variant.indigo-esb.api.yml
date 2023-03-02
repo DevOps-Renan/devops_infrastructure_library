@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: DEPLOYMENT_K8S
+  labels:
+    app: DEPLOYMENT_K8S
+spec:
+  progressDeadlineSeconds: 60
+  revisionHistoryLimit: 3
+  replicas: 3
+  selector:
+    matchLabels:
+      app: DEPLOYMENT_K8S
+  template:
+    metadata:
+      labels:
+        app: DEPLOYMENT_K8S
+    spec:
+      containers:
+        - name: DEPLOYMENT_K8S
+          image: evlosregistry.azurecr.io/IMAGE_NAME:latest
+          ports:
+            - containerPort: 80         
+          env:
+            - name: "Security__AuthConfigurations__Amplis__ClientId"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: amplisclientid
+            - name: "Security__AuthConfigurations__Amplis__ClientSecret"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: amplisclientsecret
+            - name: "ElasticConfiguration__Uri"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: elasticsearchuri
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: SERVICE_K8S
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 80
+  selector:
+    app: DEPLOYMENT_K8S

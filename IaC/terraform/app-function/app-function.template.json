@@ -1,0 +1,97 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "funcName": {
+            "type": "string"
+        },
+        "hostingPlanName": {
+            "type": "string"
+        },
+        "storageAccountName": {
+            "type": "string"
+        },
+        "tags": {
+            "type": "object"
+        },
+        "use32BitWorkerProcess": {
+            "type": "bool"
+        },
+        "clientHostname": {
+            "type": "string"
+        },
+        "applicationInsightsName": {
+            "type": "string"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "apiVersion": "2018-11-01",
+            "name": "[parameters('funcName')]",
+            "type": "Microsoft.Web/sites",
+            "kind": "functionapp",
+            "location": "[resourceGroup().location]",
+            "tags": "[parameters('tags')]",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "name": "[parameters('funcName')]",
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "FUNCTIONS_EXTENSION_VERSION",
+                            "value": "~3"
+                        },
+                        {
+                            "name": "FUNCTIONS_WORKER_RUNTIME",
+                            "value": "dotnet"
+                        },
+                        {
+                            "name": "AzureWebJobsStorage",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2019-06-01').keys[0].value,';EndpointSuffix=','core.windows.net')]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2019-06-01').keys[0].value,';EndpointSuffix=','core.windows.net')]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTSHARE",
+                            "value": "[concat(toLower(parameters('funcName')), '8d79')]"
+                        },
+                        {
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                            "value": "[reference(resourceId('microsoft.insights/components', parameters('applicationInsightsName')), '2015-05-01').InstrumentationKey]"
+                        },
+                        {
+                            "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
+                            "value": "[reference(resourceId('microsoft.insights/components', parameters('applicationInsightsName')), '2015-05-01').ConnectionString]"
+                        }
+                    ],
+                    "ftpsState": "FtpsOnly",
+                    "use32BitWorkerProcess": "[parameters('use32BitWorkerProcess')]"
+                },
+                "httpsOnly": true,
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName'))]",
+                "clientAffinityEnabled": false
+            },
+            "resources": [
+                {
+                    "name": "func-scheduled-transactions",
+                    "type": "functions",
+                    "apiVersion": "2020-12-01",
+                    "properties": {
+                        "files": {
+                            "run.csx": "[concat('#r \"Newtonsoft.Json\"\r\nusing System;\r\nusing System.Threading.Tasks;\r\nusing Microsoft.AspNetCore.Mvc;\r\nusing Microsoft.Azure.WebJobs;\r\nusing Microsoft.AspNetCore.Http;\r\nusing Microsoft.Extensions.Logging;\r\nusing Newtonsoft.Json;\r\nusing System.Net.Http;\r\nusing System.Net;\r\nusing System.Text;\r\n\r\nprivate readonly HttpClient _client;\r\n\r\npublic static async Task Run(TimerInfo myTimer, ILogger log)\r\n{\r\n    log.LogInformation($\"C# Timer trigger function executed at: {DateTime.Now}\");\r\n    var transactionReturn = await RunTransactions();\r\n    log.LogInformation(transactionReturn);    \r\n}\r\n\r\npublic static async Task<string> RunTransactions()\r\n{\r\n    var _client = new HttpClient();\r\n\r\n    var postResponse = await _client.PostAsync(\"https:\/\/', parameters('clientHostname'), '\/v2\/bank\/banking\/scheduledtransaction\/execute-transactions\", null);\r\n    var responseResult = await postResponse.Content.ReadAsStringAsync();\r\n    return responseResult;\r\n}')]",
+                            "function.json": "{\r\n  \"bindings\": [\r\n    {\r\n      \"name\": \"myTimer\",\r\n      \"type\": \"timerTrigger\",\r\n      \"direction\": \"in\",\r\n      \"schedule\": \"0 0 8-16\/4 * * *\"\r\n    }\r\n  ]\r\n}"
+                        }
+                    },
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/sites', parameters('funcName'))]"
+                    ]
+                }
+            ]
+        }
+    ]
+}

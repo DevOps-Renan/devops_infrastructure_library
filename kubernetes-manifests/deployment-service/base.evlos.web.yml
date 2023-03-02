@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: DEPLOYMENT_K8S
+  labels:
+    app: DEPLOYMENT_K8S
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: DEPLOYMENT_K8S
+  template:
+    metadata:
+      labels:
+        app: DEPLOYMENT_K8S
+    spec:
+      containers:
+        - name: DEPLOYMENT_K8S
+          image: evlosregistry.azurecr.io/IMAGE_NAME:latest
+          ports:
+            - containerPort: 80
+      imagePullSecrets:
+        - name: evlosregistry.secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: SERVICE_K8S
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 80
+  selector:
+    app: DEPLOYMENT_K8S
+---

@@ -1,0 +1,93 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "autoPauseDelay": {
+            "type": "string"
+        },
+        "collation": {
+            "type": "string"
+        },
+        "databaseName": {
+            "type": "string"
+        },
+        "enableSqlLedger": {
+            "type": "bool"
+        },
+        "licenseType": {
+            "type": "string"
+        },
+        "maintenanceConfigurationId": {
+            "type": "string"
+        },
+        "maxSizeBytes": {
+            "type": "int"
+        },
+        "minCapacity": {
+            "type": "string"
+        },
+        "numberOfReplicas": {
+            "type": "int"
+        },
+        "readScaleOut": {
+            "type": "string"
+        },
+        "requestedBackupStorageRedundancy": {
+            "type": "string"
+        },
+        "sampleName": {
+            "type": "string"
+        },
+        "serverName": {
+            "type": "string"
+        },
+        "skuName": {
+            "type": "string"
+        },
+        "tags": {
+            "type": "object"
+        },
+        "tier": {
+            "type": "string"
+        },
+        "zoneRedundant": {
+            "type": "bool"
+        },
+        "diagnosticLogsSettingsEnabled": {
+            "type": "bool"
+        },
+        "diagnosticLogsRetentionDays": {
+            "type": "int"
+        },
+        "logsStorageAccountName": {
+            "type": "string"
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Sql/servers/databases",
+            "apiVersion": "2021-02-01-preview",
+            "location": "[resourceGroup().location]",
+            "tags": "[parameters('tags')]",
+            "name": "[concat(parameters('serverName'), '/', parameters('databaseName'))]",
+            "properties": {
+                "collation": "[parameters('collation')]",
+                "maxSizeBytes": "[parameters('maxSizeBytes')]",
+                "sampleName": "[parameters('sampleName')]",
+                "zoneRedundant": "[parameters('zoneRedundant')]",
+                "licenseType": "[parameters('licenseType')]",
+                "readScale": "[parameters('readScaleOut')]",
+                "highAvailabilityReplicaCount": "[parameters('numberOfReplicas')]",
+                "minCapacity": "[parameters('minCapacity')]",
+                "autoPauseDelay": "[parameters('autoPauseDelay')]",
+                "requestedBackupStorageRedundancy": "[parameters('requestedBackupStorageRedundancy')]",
+                "isLedgerOn": "[parameters('enableSqlLedger')]",
+                "maintenanceConfigurationId": "[parameters('maintenanceConfigurationId')]"
+            },
+            "sku": {
+                "name": "[parameters('skuName')]",
+                "tier": "[parameters('tier')]"
+            }
+        }
+    ]
+}

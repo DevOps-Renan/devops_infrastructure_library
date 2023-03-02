@@ -1,0 +1,37 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "hostingPlanName": {
+            "type": "string"
+        },
+        "sku": {
+            "type": "string"
+        },
+        "skuCode": {
+            "type": "string"
+        },
+        "tags": {
+            "type": "object"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "apiVersion": "2020-12-01",
+            "name": "[parameters('hostingPlanName')]",
+            "type": "Microsoft.Web/serverfarms",
+            "location": "[resourceGroup().location]",
+            "tags": "[parameters('tags')]",
+            "dependsOn": [],
+            "properties": {
+                "computeMode": "Dynamic",
+                "name": "[parameters('hostingPlanName')]"
+            },
+            "sku": {
+                "tier": "[parameters('sku')]",
+                "name": "[parameters('skuCode')]"
+            }
+        }
+    ]
+}

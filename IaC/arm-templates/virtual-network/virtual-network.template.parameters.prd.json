@@ -1,0 +1,35 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualNetworkName": {
+            "value": "vnet-evl-base-prd"
+        },
+        "addressSpaces": {
+            "value": [
+                "10.16.0.0/16"
+            ]
+        },
+        "subnetAksName": {
+            "value": "subnet-aks"
+        },
+        "subnetAksAddressRange": {
+            "value": "10.16.0.0/22"
+        },
+        "subnetAgwName": {
+            "value": "subnet-waf"
+        },
+        "subnetAgwAddressRange": {
+            "value": "10.16.4.0/27"
+        },
+        "ddosProtectionPlanEnabled": {
+            "value": false
+        },
+        "tags": {
+            "value": {
+                "env": "prd"
+            }
+        }
+    }
+}
+

@@ -1,0 +1,106 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "resourceName": {
+            "value": "aks-evl-base-prd"
+        },
+        "dnsPrefix": {
+            "value": "aks-evl-base-prd-dns"
+        },
+        "kubernetesVersion": {
+            "value": "1.21.2"
+        },
+        "networkPlugin": {
+            "value": "azure"
+        },
+        "enableRBAC": {
+            "value": true
+        },
+        "enablePrivateCluster": {
+            "value": false
+        },
+        "enableHttpApplicationRouting": {
+            "value": false
+        },
+        "enableAzurePolicy": {
+            "value": true
+        },
+        "vnetSubnetName": {
+            "value": "subnet-aks"
+        },
+        "vnetName": {
+            "value": "vnet-evl-base-prd"
+        },
+        "serviceCidr": {
+            "value": "10.0.0.0/16"
+        },
+        "dnsServiceIP": {
+            "value": "10.0.0.10"
+        },
+        "dockerBridgeCidr": {
+            "value": "172.17.0.1/16"
+        },
+        "acrName": {
+            "value": "evlosregistry"
+        },
+        "acrResourceGroup": {
+            "value": "Evlos-AKS"
+        },
+        "authorizedIPRanges": {
+            "value": [
+                "177.62.50.218/32"
+            ]
+        },
+        "vmSize": {
+            "value": "Standard_DS2_v2"
+        },
+        "vmCount": {
+            "value": 2
+        },
+        "maxPodsCount": {
+            "value": 110
+        },
+        "availabilityZones": {
+            "value": [
+                "1",
+                "2",
+                "3"
+            ]
+        },
+        "applicationGatewayName": {
+            "value": "agw-evl-base-prd"
+        },
+        "tags": {
+            "value": {
+                "env": "prd"
+            }
+        },
+        "nodeResourceGroup": {
+            "value": "rg-evl-base-nodes-prd"
+        },
+        "subnetID": {
+            "value": "/subscriptions/0b84aeb3-3723-42d4-b77a-6d8b2bb3353a/resourceGroups/rg-evl-base-prd/providers/Microsoft.Network/virtualNetworks/vnet-evl-base-prd/subnets/subnet-aks"
+        },
+        "skuTier": {
+            "value": "Paid"
+        },
+        "osDiskType": {
+            "value": "Ephemeral"
+        },
+        "workspaceName": {
+            "value": "log-evl-base-prd"
+        },
+        "containerInsightsEnabled": {
+            "value": true
+        },
+        "osDiskSizeGB": {
+            "value": 80
+        },
+        "adminGroupObjectIDs": {
+            "value": [
+                "469affdd-ae48-4b3f-a385-2bac1a1b4935"
+            ]
+        }
+    }
+}

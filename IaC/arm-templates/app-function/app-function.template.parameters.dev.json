@@ -1,0 +1,29 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "funcName": {
+            "value": "func-evl-base-dev"
+        },
+        "hostingPlanName": {
+            "value": "plan-evl-base-dev"
+        },
+        "storageAccountName": {
+            "value": "stgfuncevlbasedev"
+        },
+        "use32BitWorkerProcess": {
+            "value": true
+        },
+        "tags": {
+            "value": {
+                "env": "dev"
+            }
+        },
+        "clientHostname": {
+            "value": "base.base4u.com"
+        },
+        "applicationInsightsName": {
+            "value": "ai-func-evl-base-dev"
+        }
+    }
+}

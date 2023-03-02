@@ -1,0 +1,565 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: DEPLOYMENT_K8S
+  labels:
+    app: DEPLOYMENT_K8S
+spec:
+  progressDeadlineSeconds: 60
+  revisionHistoryLimit: 3
+  replicas: 3
+  selector:
+    matchLabels:
+      app: DEPLOYMENT_K8S
+  template:
+    metadata:
+      labels:
+        app: DEPLOYMENT_K8S
+    spec:
+      containers:
+        - name: DEPLOYMENT_K8S
+          image: evlosregistry.azurecr.io/IMAGE_NAME:latest
+          ports:
+            - containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /index.html
+              port: 80
+            periodSeconds: 3
+            timeoutSeconds: 30
+          env:
+            - name: "ConnectionStrings__AdministratorDataContext"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: connstr          
+            - name: "ConnectionStrings__BankingDataContext"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: connstr
+            - name: "ConnectionStrings__ProductManagementDataContext"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: connstr
+            - name: "ConnectionStrings__UserDataContext"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: connstr
+            - name: "ConnectionStrings__ConciliationDataContext"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: connstr
+            - name: "ConnectionStrings__PartnerWebhookDataContext"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: connstr
+            - name: "ConnectionStrings__OrderDataContext"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: connstr
+            - name: "ConnectionStrings__OpenFinanceDataContext"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: connstr   
+            - name: "ConnectionStrings__ConexaoRedis"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: conexaoredis
+#Security                
+            - name: "Security__STSServer"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: stsserver  
+            - name: "Security__Bankly__BaseUrl"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: banklybaseurl
+            - name: "Security__Bankly__AuthConfigurations__STSServer"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: banklystsserver
+            - name: "Security__Bankly__AuthConfigurations__ClientId"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: banklyclientid
+            - name: "Security__Bankly__AuthConfigurations__ClientSecret"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: banklyclientsecret
+            - name: "Security__Bankly__AuthConfigurations__MTLSCompanyKey"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: mtlscompanykey
+            - name: "Security__Bankly__AuthConfigurations__MTLSClientIdName"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: mtlsclientidname
+            - name: "Security__Bankly__AuthConfigurations__MTLSPassphraseName"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: mtlspassphrasename
+            - name: "Security__Bankly__AuthConfigurations__MTLSCertSecretName"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: mtlscertsecretname
+            - name: "Security__Bankly__AuthConfigurations__MTLSPrivateKeySecretName"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: mtlsprivatekeysecretname
+            - name: "Security__Bankly__AuthConfigurations__MTLSSubjectDnName"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: mtlssubjectdnname
+            - name: "Security__Bankly__AuthConfigurations__MTLSTokenSecretName"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: mtlstokensecretname
+            - name: "Security__Bankly__AuthConfigurations__MTLSSTSServer"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: mtlsstsserver  
+            - name: "Security__Bankly__Webhooks__PublicKey"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: webhookpublickey
+            - name: "Security__Bankly__Webhooks__SecretKey"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: webhookprivatekey                                  
+#Calendar
+            - name: "Security__CalendarConfigurations__Token"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: calendartoken  
+            - name: "Security__CalendarConfigurations__BaseUrl"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: calendarbaseurl                                                      
+#FlipConfigurations
+            - name: "Security__FlipConfigurations__BaseUrl"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: flipconfigurationsbaseurl
+            - name: "Security__FlipConfigurations__AssignorBaseUrl"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: flipassignorbaseurl                     
+            - name: "Security__FlipConfigurations__AuthConfigurations__STSServer"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: flipconfigurationsstsserver                  
+            - name: "Security__FlipConfigurations__AuthConfigurations__ClientId"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: flipconfigurationsclientid
+            - name: "Security__FlipConfigurations__AuthConfigurations__ClientSecret"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: flipconfigurationsclientsecret                 
+            - name: "Security__FlipConfigurations__AuthConfigurations__Scopes"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: flipconfigurationsscopes
+            - name: "Security__FlipConfigurations__AuthConfigurations__UserName"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: flipconfigurationsusername
+            - name: "Security__FlipConfigurations__AuthConfigurations__Password"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: flipconfigurationspassword
+            - name: "Security__FlipConfigurations__AuthConfigurations__Expires"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: flipconfigurationsexpires 
+#SalesForceConfigurations
+            - name: "Security__SalesForceConfigurations__BaseUrl"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: salesforceconfigurationsbaseurl
+            - name: "Security__SalesForceConfigurations__AuthConfigurations__ClientId"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: salesforceconfigurationclientid
+            - name: "Security__SalesForceConfigurations__AuthConfigurations__Password"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: salesforceconfigurationspassword
+            - name: "Security__SalesForceConfigurations__AuthConfigurations__STSServer"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: salesforceconfigurationssts      
+            - name: "Security__SalesForceConfigurations__AuthConfigurations__UserName"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: salesforceconfigurationsusername
+            - name: "Security__SalesForceConfigurations__AuthConfigurations__OwnerUserName"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: salesforceconfigurationsownerusername                                                    
+#BankingJWTTOKEN
+            - name: "Security__BankingJWTTokenSettings__Key"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: bankingjwttokensettingskey
+            - name: "Security__BankingJWTTokenSettings__Issuer"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: bankingjwttokensettingsissuer      
+#RemessaOnline
+            - name: "Security__RemessaOnlineConfigurations__AuthConfigurations__ClientId"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: remessaonlineclientid
+            - name: "Security__RemessaOnlineConfigurations__AuthConfigurations__ClientSecret"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: remessaonlineclientsecret
+            - name: "Security__RemessaOnlineConfigurations__AuthConfigurations__XToken"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: remessaonlinextoken                
+#AdminJWTTOKEN                  
+            - name: "Security__AdminJWTTokenSettings__Key"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: adminjwttokensettingskey
+            - name: "Security__AdminJWTTokenSettings__Issuer"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: adminjwttokensettingsissuer                                     
+#ConciliationJWTTOKEN
+            - name: "Security__ConciliationJWTTokenSettings__Key"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: conciliationjwttokensettingskey
+            - name: "Security__ConciliationJWTTokenSettings__Issuer"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: conciliationjwttokensettingsissuer                                   
+#AccountOfficerJWTTOKEN
+            - name: "Security__AccountOfficerJWTTokenSettings__Key"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: accountofficerjwttokensettingskey
+            - name: "Security__AccountOfficerJWTTokenSettings__ExpirationDays"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: accountofficerjwttokensettingsexpiration
+            - name: "Security__AccountOfficerJWTTokenSettings__Issuer"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: accountofficerjwttokensettingsissuer                                   
+#PasswordSettings
+            - name: "Security__PasswordSettings__HistoryAge"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: passwordsettingshistory
+            - name: "Security__PasswordSettings__ExpirationDays"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: passwordsettingsexpiration
+            - name: "Security__PasswordSettings__AttemptsLimit"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: passwordsettingsattemps                                    
+#UserSettings
+            - name: "Security__UserSettings__MaximumInactiveDays"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: usersettingsmaximuminactivedays 
+#EmailSettings                  
+            - name: "Security__EmailSettings__PrimaryDomain"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: emailsettingsprimarydomain
+            - name: "Security__EmailSettings__PrimaryPort"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: emailsettingsprimaryport
+            - name: "Security__EmailSettings__FromEmail"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: emailsettingsfromemail
+            - name: "Security__EmailSettings__FromPassword"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: emailsettingsfrompassword
+            - name: "Security__EmailSettings__FromUser"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: emailsettingsfromuser
+            - name: "Security__EmailSettings__TemplatePath"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: emailsettingstemplatepath
+            - name: "Security__EmailSettings__AttendanceEmail"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: emailsettingsattedance
+#ApplicationSettings
+            - name: "Security__ApplicationSettings__InstanceNameRedis"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: applicationsettingsinstancenameredis
+            - name: "Security__ApplicationSettings__DefaultBankShortName"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: applicationsettingsdefaultbankshortname
+            - name: "Security__ApplicationSettings__DefaultBankCode"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: applicationsettingsdefaultbankcode                                                                     
+            - name: "Security__ApplicationSettings__DefaultBankBranch"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: applicationsettingsdefaultbranch
+            - name: "Security__ApplicationSettings__DefaultIspb"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: applicationsettingsdefaultispb
+            - name: "Security__ApplicationSettings__TemplateReceiptPath"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: applicationsettingstemplatereceiptpath
+            - name: "Security__ApplicationSettings__FrontOrigin"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: frontoriginvalue
+            - name: "Security__ApplicationSettings__FrontOriginDescription"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: frontorigindescription
+            - name: "Security__ApplicationSettings__ConciliationPanelUrl"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: applicationsettingsconciliationpanelurl
+            - name: "Security__ApplicationSettings__AdminWebUrl"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: adminweburl                  
+            - name: "Security__ApplicationSettings__AdminExpirationPasswordDays"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: applicationsettingsadminexpirationspassword                                  
+            - name: "Security__ApplicationSettings__UrlWhatsApp"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: applicationsettingsurlwhatsapp
+#AccountOfficerConfiguration
+            - name: "Security__ApplicationSettings__AccountOfficerConfiguration__AccountOfficerPanelUrl"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: applicationsettingsaccountofficerpanelurl
+#ConciliationConfiguration
+            - name: "Security__ApplicationSettings__ConciliationConfiguration__ConciliationPanelUrl"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: applicationsettingsconciliationconfigurationpanelurl
+            - name: "Security__ApplicationSettings__ConciliationConfiguration__AuthenticationScope"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: applicationsettingsconciliationauthscope
+            - name: "Security__ApplicationSettings__ConciliationConfiguration__ConciliationPaymentUrl"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: applicationsettingsconciliationpaymenturl
+#OnboardingWebhookConfiguration
+            - name: "Security__ApplicationSettings__OnboardingWebhookConfiguration__Url"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: applicationsettingsoboardingwebhookurl
+#DebitRequestConfiguration
+            - name: "Security__ApplicationSettings__DebitRequestConfiguration__AuthenticationScope"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: applicationsettingsdebitauthscope
+#CustomerSupportEmail 
+            - name: "Security__ApplicationSettings__CustomerSupportEmail"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: applicationsettingscustomersupportemail                                                                                                                        
+#AzureSettings
+            - name: "Security__Azure__AzureSettings__BlobContainer"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: azureblobcontainer
+            - name: "Security__Azure__AzureSettings__AccountName"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: azureaccountname
+            - name: "Security__Azure__AzureSettings__AccountKey"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: azureaccountkey
+            - name: "Security__Azure__AzureSettings__VaultUri"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: azurevaulturi
+            - name: "Security__Azure__AzureSettings__VaultClientId"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: azurevaultclientid
+            - name: "Security__Azure__AzureSettings__VaultClientSecret"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: azurevaultclientsecret
+#admintwoauthentication
+            - name: "Security__AdminTwoFactorAuthentication__Name"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: admintwofactorauthenticationname
+            - name: "Security__AdminTwoFactorAuthentication__Key"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: admintwofactorauthenticationkey
+            - name: "Security__AdminTwoFactorAuthentication__Period"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: admintwofactorauthenticationperiod 
+            - name: "Security__AdminTwoFactorAuthentication__Algorithm"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: admintwofactorauthenticationalgorithm
+            - name: "Security__AdminTwoFactorAuthentication__Digits"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: admintwofactorauthenticationdigits                   
+#usertwoauthentication     
+            - name: "Security__UserTwoFactorAuthentication__Name"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: usertwofactorauthenticationname              
+            - name: "Security__UserTwoFactorAuthentication__Key"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: usertwofactorauthenticationkey
+            - name: "Security__UserTwoFactorAuthentication__Period"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: usertwofactorauthenticationperiod
+            - name: "Security__UserTwoFactorAuthentication__Algorithm"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: usertwofactorauthenticationalgorithm
+            - name: "Security__UserTwoFactorAuthentication__Digits"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: usertwofactorauthenticationdigits                                                                         
+#ElasticSearch                  
+            - name: "ElasticConfiguration__Uri"
+              valueFrom:
+                secretKeyRef:
+                  name: env-vars
+                  key: elasticsearchuri
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: SERVICE_K8S
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 80
+  selector:
+    app: DEPLOYMENT_K8S

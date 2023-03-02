@@ -1,0 +1,70 @@
+--- # ---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-<nome_do_cliente>-bank
+  namespace: cert-manager
+spec:
+  acme:
+    # The ACME server URL
+    server: https://acme-v02.api.letsencrypt.org/directory
+    # Email address used for ACME registration
+    email: tecnologia@evlos4u.com
+    # Name of a secret used to store the ACME account private key
+    privateKeySecretRef:
+      name: letsencrypt-<nome_do_cliente>-bank
+    # Enable the HTTP-01 challenge provider
+    solvers:
+      - http01:
+          ingress:
+            class: azure/application-gateway
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: base-<nome_do_cliente>-ingress
+  namespace: aks-evl-<nome_do_cliente>-prd
+  annotations:
+    kubernetes.io/ingress.class: azure/application-gateway
+    appgw.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-<nome_do_cliente>-bank
+    cert-manager.io/acme-challenge-type: http01
+    acme.cert-manager.io/http01-edit-in-place: "true"
+spec:
+  tls:
+    - hosts:
+        - <nome_do_cliente>.evlos4u.com
+        - <nome_do_cliente>-api.evlos4u.com
+        - <nome_do_cliente>-admin.evlos4u.com
+      secretName: letsencrypt-<nome_do_cliente>-bank
+  rules:
+    - host: <nome_do_cliente>.evlos4u.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: <nome_do_cliente>-app-k8s
+                port:
+                  number: 80
+    - host: <nome_do_cliente>-api.evlos4u.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: <nome_do_cliente>-api-k8s
+                port:
+                  number: 80
+    - host: <nome_do_cliente>-admin.evlos4u.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: <nome_do_cliente>-admin-web-k8s
+                port:
+                  number: 80

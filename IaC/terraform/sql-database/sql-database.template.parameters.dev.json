@@ -1,0 +1,68 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "collation": {
+            "value": "SQL_Latin1_General_CP1_CI_AS"
+        },
+        "databaseName": {
+            "value": "sqldb-evl-base-dev"
+        },
+        "tier": {
+            "value": "Basic"
+        },
+        "skuName": {
+            "value": "Basic"
+        },
+        "maxSizeBytes": {
+            "value": 2147483648
+        },
+        "sampleName": {
+            "value": ""
+        },
+        "serverName": {
+            "value": "sql-evl-base-dev"
+        },
+        "zoneRedundant": {
+            "value": false
+        },
+        "licenseType": {
+            "value": ""
+        },
+        "readScaleOut": {
+            "value": "Disabled"
+        },
+        "numberOfReplicas": {
+            "value": 0
+        },
+        "tags": {
+            "value": {
+                "env": "dev"
+            }
+        },
+        "requestedBackupStorageRedundancy": {
+            "value": "Local"
+        },
+        "maintenanceConfigurationId": {
+            "value": "/subscriptions/0b84aeb3-3723-42d4-b77a-6d8b2bb3353a/providers/Microsoft.Maintenance/publicMaintenanceConfigurations/SQL_Default"
+        },
+        "minCapacity": {
+            "value": ""
+        },
+        "autoPauseDelay": {
+            "value": ""
+        },
+        "enableSqlLedger": {
+            "value": false
+        },
+        "diagnosticLogsSettingsEnabled": {
+            "value": true
+        },
+        "diagnosticLogsRetentionDays": {
+            "value": 7
+        },
+        "logsStorageAccountName": {
+            "value": "stglogsevlbasedev"
+        }
+    }
+}
