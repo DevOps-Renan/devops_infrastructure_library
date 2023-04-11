@@ -16,7 +16,7 @@ jobs:
               value: 'ola',
               headers: {
                 'accept': 'application/vnd.github+json',       
-                'authorization': ${{ secrets.SECRET }},
+                'authorization': 'token ${{ secrets.SECRET }}',
                 'X-GitHub-Api-Version': '2022-11-28'
               }
             })
