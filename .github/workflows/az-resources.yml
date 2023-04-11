@@ -15,10 +15,10 @@ jobs:
         with:
           script: |       
             await github.request('PATCH /repos/{owner}/{repo}/actions/variables/{name}', {
-              owner: DevOps-Renan,
-              repo: devops_infrastructure_library,
-              name: AZURE_RESOURCES_JSON,
-              value: ola,
+              owner: 'DevOps-Renan',
+              repo: 'devops_infrastructure_library',
+              name: 'AZURE_RESOURCES_JSON',
+              value: 'ola',
               headers: {
                 'X-GitHub-Api-Version': '2022-11-28'
               }
