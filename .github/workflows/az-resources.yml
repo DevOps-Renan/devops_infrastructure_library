@@ -14,11 +14,7 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |       
-            const octokit = new Octokit({
-              auth: ${{ secrets.SECRET }}
-            })
-
-            await octokit.request('PATCH /repos/{owner}/{repo}/actions/variables/{name}', {
+            await github.request('PATCH /repos/{owner}/{repo}/actions/variables/{name}', {
               owner: DevOps-Renan,
               repo: devops_infrastructure_library,
               name: AZURE_RESOURCES_JSON,
