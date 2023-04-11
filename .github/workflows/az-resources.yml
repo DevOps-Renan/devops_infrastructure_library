@@ -15,7 +15,8 @@ jobs:
               name: 'AZURE_RESOURCES_JSON1',
               value: 'ola',
               headers: {
-                'accept': 'application/vnd.github+json',            
+                'accept': 'application/vnd.github+json',       
+                'authorization': ${{ secrets.SECRET }},
                 'X-GitHub-Api-Version': '2022-11-28'
               }
             })
