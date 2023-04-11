@@ -18,8 +18,7 @@ jobs:
         shell: bash     
         run: |       
           # Convert JSON object to string using jq
-          string=$(echo ${{ env.az_resources }} | jq -r tostring)
-
+          string=$(echo ${{ env.az_resources }} | jq -c .)
           # Print the string
           echo $string
   
