@@ -9,13 +9,12 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |       
-            await github.request('PATCH /repos/{owner}/{repo}/actions/variables/{name}', {
+            await github.request('POST /repos/{owner}/{repo}/actions/variables', {
               owner: 'DevOps-Renan',
               repo: 'devops_infrastructure_library',
-              name: 'AZURE_RESOURCES_JSON',
+              name: 'AZURE_RESOURCES_JSON1',
               value: 'ola',
               headers: {
-                'authorization': ${{ secrets.SECRET }},
                 'X-GitHub-Api-Version': '2022-11-28'
               }
             })
