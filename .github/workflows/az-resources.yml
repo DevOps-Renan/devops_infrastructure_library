@@ -1,22 +1,20 @@
-name: Azure Resources
+name: Create Variable
 
 on:
   workflow_dispatch:
 
 jobs:
-  check-resources:
+  create_variable:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
 
-      - name: Creating Release Notes        
-        run: |       
-            curl -L \
-              -X PATCH \
-              -H "Accept: application/vnd.github+json" \
-              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}"\
-              -H "X-GitHub-Api-Version: 2022-11-28" \
-              https://api.github.com/repos/OWNER/REPO/actions/variables/NAME \
-              -d '{"name":"AZURE_RESOURCES_JSON","value":"octocat"}'
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Create variable
+      run: |
+        echo "MINHA_VARIAVEL=meu_valor" >> .env
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
               
