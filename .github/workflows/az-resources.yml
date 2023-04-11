@@ -18,9 +18,9 @@ jobs:
         shell: bash     
         run: |       
           # Convert JSON object to string using jq
-          my_json_stringified=$(echo $my_json | jq -r .)
+          my_json_stringified=$(echo ${{ env.env.az_resources }} | jq -r .)
           # Print the string
-          echo $my_json_stringified=
+          echo $my_json_stringified
   
       - name: Creating Release Notes        
         run: |       
