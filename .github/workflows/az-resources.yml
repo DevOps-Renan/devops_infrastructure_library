@@ -5,5 +5,16 @@ jobs:
   criar-variavel:
     runs-on: ubuntu-latest
     steps:
-    - name: Criação de Variável de Ambiente
-      run: echo "NOME_DA_VARIAVEL=valor_da_variavel" >> $GITHUB_ENV
+      - name: Creating Release Notes        
+        uses: actions/github-script@v6
+        with:
+          script: |       
+            await github.request('PATCH /repos/{owner}/{repo}/actions/variables/{name}', {
+              owner: 'DevOps-Renan',
+              repo: 'devops_infrastructure_library',
+              name: 'AZURE_RESOURCES_JSON',
+              value: 'ola',
+              headers: {
+                'X-GitHub-Api-Version': '2022-11-28'
+              }
+            })
