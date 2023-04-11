@@ -1,20 +1,9 @@
-name: Create GitHub Environment Variable
-
-on:
-  push:
-    branches:
-      - master
+name: Criar Variável de Ambiente
+on: [push]
 
 jobs:
-  create_github_env_variable:
+  criar-variavel:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-
-    - name: Set environment variable
-      run: |
-        echo -e "MY_VARIABLE=my_value" >> $GITHUB_ENV
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Criação de Variável de Ambiente
+      run: echo "NOME_DA_VARIAVEL=valor_da_variavel" >> $GITHUB_ENV
