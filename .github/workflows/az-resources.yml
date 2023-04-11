@@ -6,18 +6,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Creating Release Notes        
-        uses: actions/github-script@v6
-        with:
-          script: |       
-            await github.request('POST /repos/{owner}/{repo}/actions/variables', {
-              owner: 'DevOps-Renan',
-              repo: 'devops_infrastructure_library',
-              name: 'AZURE_RESOURCES_JSON1',
-              value: 'ola',
-              headers: {
-                'accept': 'application/vnd.github+json',       
-                'authorization': 'Bearer ${{ secrets.SECRET }}',
-                'X-GitHub-Api-Version': '2022-11-28'
-              }
-            })
+        run: |       
+          curl -L \
+            -X PATCH \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.SECRET }}"\
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/DevOps-Renan/devops_infrastructure_library/actions/variables/AZURE_RESOURCES_JSON \
+            -d '{"name":"AZURE_RESOURCES_JSON","value":"octocatatt"}'
 
