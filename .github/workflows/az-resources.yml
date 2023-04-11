@@ -5,6 +5,12 @@ jobs:
   criar-variavel:
     runs-on: ubuntu-latest
     steps:
+
+      - name: Az Resources      
+        run: |       
+          curl -H "Content-Type: application/json" -H "Authorization: Bearer TOKEN" https://management.azure.com/subscriptions/0b84aeb3-3723-42d4-b77a-6d8b2bb3353a/resources?api-version=2021-04-01
+
+  
       - name: Creating Release Notes        
         run: |       
           curl -L \
