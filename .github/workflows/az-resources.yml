@@ -16,7 +16,7 @@ jobs:
               value: 'ola',
               headers: {
                 'accept': 'application/vnd.github+json',       
-                'authorization': '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',
+                'authorization': 'token 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',
                 'X-GitHub-Api-Version': '2022-11-28'
               }
             })
