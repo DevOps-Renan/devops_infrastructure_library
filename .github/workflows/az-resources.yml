@@ -15,69 +15,52 @@ jobs:
 
       - name: Creating Release Notes   
         shell: bash     
-        run: |       
-          # curl -o response.json -H "Content-Type: application/json" \
-          #   -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Ii1LSTNROW5OUjdiUm9meG1lWm9YcWJIWkdldyIsImtpZCI6Ii1LSTNROW5OUjdiUm9meG1lWm9YcWJIWkdldyJ9.eyJhdWQiOiJodHRwczovL21hbmFnZW1lbnQuY29yZS53aW5kb3dzLm5ldCIsImlzcyI6Imh0dHBzOi8vc3RzLndpbmRvd3MubmV0LzgxODcwNGZiLThmZjMtNGQyOC05YTA1LWY1NDJjOTFhYmU0Ni8iLCJpYXQiOjE2ODEzMjY1MTUsIm5iZiI6MTY4MTMyNjUxNSwiZXhwIjoxNjgxMzMxNDQwLCJhY3IiOiIxIiwiYWlvIjoiQVZRQXEvOFRBQUFBWndoeTRyaGt2VFhmbVZBbjJrU00vQ3FyTW1DNVZ1RjFLUDc1eWpWaktMcGNJWFdJcXBIK2J3OG1uQ0ZwQWRMeUNXRTkvVDZmQzVoSEg1UkI1cEJjdVNEMklEVFYvUjFMaEpzWVVlcThwS1U9IiwiYW1yIjpbInB3ZCIsIm1mYSJdLCJhcHBpZCI6IjE4ZmJjYTE2LTIyMjQtNDVmNi04NWIwLWY3YmYyYjM5YjNmMyIsImFwcGlkYWNyIjoiMCIsImZhbWlseV9uYW1lIjoiU2FtcGFpbyIsImdpdmVuX25hbWUiOiJSZW5hbiIsImdyb3VwcyI6WyJlZGE4NTM4NC0wNmU0LTRlYjEtYTI1ZC0yOGNhYTYwNTA5YzEiLCI0NjlhZmZkZC1hZTQ4LTRiM2YtYTM4NS0yYmFjMWExYjQ5MzUiXSwiaXBhZGRyIjoiMTg5LjEwNi43OC4zNiIsIm5hbWUiOiJSZW5hbiBTYW1wYWlvIiwib2lkIjoiODllZTMyMWQtOTVhZS00ODdhLTlmZmQtYWUwNmU0MzRkMzY4IiwicHVpZCI6IjEwMDMyMDAxQTI5NTg3RTMiLCJyaCI6IjAuQVVVQS13U0hnZk9QS0UyYUJmVkN5UnEtUmtaSWYza0F1dGRQdWtQYXdmajJNQk5GQU1NLiIsInNjcCI6InVzZXJfaW1wZXJzb25hdGlvbiIsInN1YiI6IjJXak1hTVFnQmlkZTY0LWQ3eFY0Wk1PNjdBOXJjR2I2RkpmRk00VDJSVUEiLCJ0aWQiOiI4MTg3MDRmYi04ZmYzLTRkMjgtOWEwNS1mNTQyYzkxYWJlNDYiLCJ1bmlxdWVfbmFtZSI6InJlbmFuc2FtcGFpb0BhbGV4YW5kZXJjb25jZWljYW9ldmxvczR1Lm9ubWljcm9zb2Z0LmNvbSIsInVwbiI6InJlbmFuc2FtcGFpb0BhbGV4YW5kZXJjb25jZWljYW9ldmxvczR1Lm9ubWljcm9zb2Z0LmNvbSIsInV0aSI6Ik9ERzROSERZSjBXRDdtMXp3aEYzQUEiLCJ2ZXIiOiIxLjAiLCJ3aWRzIjpbIjRhNWQ4ZjY1LTQxZGEtNGRlNC04OTY4LWUwMzViNjUzMzljZiIsImI3OWZiZjRkLTNlZjktNDY4OS04MTQzLTc2YjE5NGU4NTUwOSJdLCJ4bXNfdGNkdCI6MTU3OTU3ODQ5NH0.IkAfG2ep0FybGVcgnCksqj7roWo-kRioM7Pt62Mx6A6boYuzI-eDMxfvZgsLIPLOfdz_fNOZnovipwty_sCXLL2agWqXgdpIuqTeU2-NtuXuzV7DddbQFDa3l9SrbMG7jOFEkXfKRjaNXCBYS0nIv-WBu7FB7UUK57gWFTqBzloBA2CPrbOixWfdyhzsmi74uLSw-LCubfH7uGlrBIhN80-APZJ5CgiERxZEtNeAqIDPj4qM8riesIncYRrFC-6TX-Kh6aGrPPovuBcwsfDV6a7N7XnJ3ej-cnCO5UlKY4x4x4IQYEoFmBuIKlcSEAr7PMNWqUbghqGQvgnoKyHs2Q" \
-          #   https://management.azure.com/subscriptions/0b84aeb3-3723-42d4-b77a-6d8b2bb3353a/resources?api-version=2021-04-01
-          # echo "az_resources=$(curl -H "Content-Type: application/json" \
-          #   -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Ii1LSTNROW5OUjdiUm9meG1lWm9YcWJIWkdldyIsImtpZCI6Ii1LSTNROW5OUjdiUm9meG1lWm9YcWJIWkdldyJ9.eyJhdWQiOiJodHRwczovL21hbmFnZW1lbnQuY29yZS53aW5kb3dzLm5ldCIsImlzcyI6Imh0dHBzOi8vc3RzLndpbmRvd3MubmV0LzgxODcwNGZiLThmZjMtNGQyOC05YTA1LWY1NDJjOTFhYmU0Ni8iLCJpYXQiOjE2ODEzMjY1MTUsIm5iZiI6MTY4MTMyNjUxNSwiZXhwIjoxNjgxMzMxNDQwLCJhY3IiOiIxIiwiYWlvIjoiQVZRQXEvOFRBQUFBWndoeTRyaGt2VFhmbVZBbjJrU00vQ3FyTW1DNVZ1RjFLUDc1eWpWaktMcGNJWFdJcXBIK2J3OG1uQ0ZwQWRMeUNXRTkvVDZmQzVoSEg1UkI1cEJjdVNEMklEVFYvUjFMaEpzWVVlcThwS1U9IiwiYW1yIjpbInB3ZCIsIm1mYSJdLCJhcHBpZCI6IjE4ZmJjYTE2LTIyMjQtNDVmNi04NWIwLWY3YmYyYjM5YjNmMyIsImFwcGlkYWNyIjoiMCIsImZhbWlseV9uYW1lIjoiU2FtcGFpbyIsImdpdmVuX25hbWUiOiJSZW5hbiIsImdyb3VwcyI6WyJlZGE4NTM4NC0wNmU0LTRlYjEtYTI1ZC0yOGNhYTYwNTA5YzEiLCI0NjlhZmZkZC1hZTQ4LTRiM2YtYTM4NS0yYmFjMWExYjQ5MzUiXSwiaXBhZGRyIjoiMTg5LjEwNi43OC4zNiIsIm5hbWUiOiJSZW5hbiBTYW1wYWlvIiwib2lkIjoiODllZTMyMWQtOTVhZS00ODdhLTlmZmQtYWUwNmU0MzRkMzY4IiwicHVpZCI6IjEwMDMyMDAxQTI5NTg3RTMiLCJyaCI6IjAuQVVVQS13U0hnZk9QS0UyYUJmVkN5UnEtUmtaSWYza0F1dGRQdWtQYXdmajJNQk5GQU1NLiIsInNjcCI6InVzZXJfaW1wZXJzb25hdGlvbiIsInN1YiI6IjJXak1hTVFnQmlkZTY0LWQ3eFY0Wk1PNjdBOXJjR2I2RkpmRk00VDJSVUEiLCJ0aWQiOiI4MTg3MDRmYi04ZmYzLTRkMjgtOWEwNS1mNTQyYzkxYWJlNDYiLCJ1bmlxdWVfbmFtZSI6InJlbmFuc2FtcGFpb0BhbGV4YW5kZXJjb25jZWljYW9ldmxvczR1Lm9ubWljcm9zb2Z0LmNvbSIsInVwbiI6InJlbmFuc2FtcGFpb0BhbGV4YW5kZXJjb25jZWljYW9ldmxvczR1Lm9ubWljcm9zb2Z0LmNvbSIsInV0aSI6Ik9ERzROSERZSjBXRDdtMXp3aEYzQUEiLCJ2ZXIiOiIxLjAiLCJ3aWRzIjpbIjRhNWQ4ZjY1LTQxZGEtNGRlNC04OTY4LWUwMzViNjUzMzljZiIsImI3OWZiZjRkLTNlZjktNDY4OS04MTQzLTc2YjE5NGU4NTUwOSJdLCJ4bXNfdGNkdCI6MTU3OTU3ODQ5NH0.IkAfG2ep0FybGVcgnCksqj7roWo-kRioM7Pt62Mx6A6boYuzI-eDMxfvZgsLIPLOfdz_fNOZnovipwty_sCXLL2agWqXgdpIuqTeU2-NtuXuzV7DddbQFDa3l9SrbMG7jOFEkXfKRjaNXCBYS0nIv-WBu7FB7UUK57gWFTqBzloBA2CPrbOixWfdyhzsmi74uLSw-LCubfH7uGlrBIhN80-APZJ5CgiERxZEtNeAqIDPj4qM8riesIncYRrFC-6TX-Kh6aGrPPovuBcwsfDV6a7N7XnJ3ej-cnCO5UlKY4x4x4IQYEoFmBuIKlcSEAr7PMNWqUbghqGQvgnoKyHs2Q" \
-          #   https://management.azure.com/subscriptions/0b84aeb3-3723-42d4-b77a-6d8b2bb3353a/resources?api-version=2021-04-01)" >> $GITHUB_ENV   
-
-          # json1=$(cat response.json) 
-
-          # value=$(echo $json1 | jq '.value')
-          # echo $value
-
+        run: |                
+          json1=$(cat response.json)
+          array1=$(echo $json1 | jq '.value')
+          
           json2=$(curl -H "Content-Type: application/json" \
-            -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Ii1LSTNROW5OUjdiUm9meG1lWm9YcWJIWkdldyIsImtpZCI6Ii1LSTNROW5OUjdiUm9meG1lWm9YcWJIWkdldyJ9.eyJhdWQiOiJodHRwczovL21hbmFnZW1lbnQuY29yZS53aW5kb3dzLm5ldCIsImlzcyI6Imh0dHBzOi8vc3RzLndpbmRvd3MubmV0LzgxODcwNGZiLThmZjMtNGQyOC05YTA1LWY1NDJjOTFhYmU0Ni8iLCJpYXQiOjE2ODEzMzAxMTYsIm5iZiI6MTY4MTMzMDExNiwiZXhwIjoxNjgxMzM0NzkwLCJhY3IiOiIxIiwiYWlvIjoiQVZRQXEvOFRBQUFBd0x4TkVUbnVPNUt6ZHBwaVV1amVNV29mWXE0Z0dKZnNIejRxUE9vMlh1UVdoSkxoVUJVbU5pOGUwUXFoOElqdFRpLzhXV09mS1F3VFFYcGR1NWZZcFZEUGhORXdEc2l0N0NuSWk3QndyOWs9IiwiYW1yIjpbInB3ZCIsIm1mYSJdLCJhcHBpZCI6IjE4ZmJjYTE2LTIyMjQtNDVmNi04NWIwLWY3YmYyYjM5YjNmMyIsImFwcGlkYWNyIjoiMCIsImZhbWlseV9uYW1lIjoiU2FtcGFpbyIsImdpdmVuX25hbWUiOiJSZW5hbiIsImdyb3VwcyI6WyJlZGE4NTM4NC0wNmU0LTRlYjEtYTI1ZC0yOGNhYTYwNTA5YzEiLCI0NjlhZmZkZC1hZTQ4LTRiM2YtYTM4NS0yYmFjMWExYjQ5MzUiXSwiaXBhZGRyIjoiMTg5LjEwNi43OC4zNiIsIm5hbWUiOiJSZW5hbiBTYW1wYWlvIiwib2lkIjoiODllZTMyMWQtOTVhZS00ODdhLTlmZmQtYWUwNmU0MzRkMzY4IiwicHVpZCI6IjEwMDMyMDAxQTI5NTg3RTMiLCJyaCI6IjAuQVVVQS13U0hnZk9QS0UyYUJmVkN5UnEtUmtaSWYza0F1dGRQdWtQYXdmajJNQk5GQU1NLiIsInNjcCI6InVzZXJfaW1wZXJzb25hdGlvbiIsInN1YiI6IjJXak1hTVFnQmlkZTY0LWQ3eFY0Wk1PNjdBOXJjR2I2RkpmRk00VDJSVUEiLCJ0aWQiOiI4MTg3MDRmYi04ZmYzLTRkMjgtOWEwNS1mNTQyYzkxYWJlNDYiLCJ1bmlxdWVfbmFtZSI6InJlbmFuc2FtcGFpb0BhbGV4YW5kZXJjb25jZWljYW9ldmxvczR1Lm9ubWljcm9zb2Z0LmNvbSIsInVwbiI6InJlbmFuc2FtcGFpb0BhbGV4YW5kZXJjb25jZWljYW9ldmxvczR1Lm9ubWljcm9zb2Z0LmNvbSIsInV0aSI6InoxLXI0UVZhT1VxalFmYmVpRGNlQWciLCJ2ZXIiOiIxLjAiLCJ3aWRzIjpbIjRhNWQ4ZjY1LTQxZGEtNGRlNC04OTY4LWUwMzViNjUzMzljZiIsImI3OWZiZjRkLTNlZjktNDY4OS04MTQzLTc2YjE5NGU4NTUwOSJdLCJ4bXNfdGNkdCI6MTU3OTU3ODQ5NH0.KHd_KmvYelNjFC_Bmuk4xSBkpULgDBu7YOSA1qzSOoYa6gfgcvFvZO3SQIQusdi-AimQa7yUIEyGyf9WJ5G0l0HzQdG-C2p7m-xHqXGWbwVaw5MZ4iUl5Y-rW0rTBxC3mqEE5-jTtmp9kvOBQlX4LNXklNyS0dopbHnQtmX8I9Hv2KdXdX0zbtD7g9ZngR1onRvhtaoXCPhvwbauUotZst6TcEbqwhfchafRoXH41YcAiUBIjQ5yxJTv2WfilMVEghDr1eAHJywUearEzlsw3pIv0txDA6JQxDReIFS-DgxtIxq91YRzCir9Gd0upQzN41b6AFaLGyyAXIC2r5V6ng" \
+            -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Ii1LSTNROW5OUjdiUm9meG1lWm9YcWJIWkdldyIsImtpZCI6Ii1LSTNROW5OUjdiUm9meG1lWm9YcWJIWkdldyJ9.eyJhdWQiOiJodHRwczovL21hbmFnZW1lbnQuY29yZS53aW5kb3dzLm5ldCIsImlzcyI6Imh0dHBzOi8vc3RzLndpbmRvd3MubmV0LzgxODcwNGZiLThmZjMtNGQyOC05YTA1LWY1NDJjOTFhYmU0Ni8iLCJpYXQiOjE2ODEzMjY1MTUsIm5iZiI6MTY4MTMyNjUxNSwiZXhwIjoxNjgxMzMxNDQwLCJhY3IiOiIxIiwiYWlvIjoiQVZRQXEvOFRBQUFBWndoeTRyaGt2VFhmbVZBbjJrU00vQ3FyTW1DNVZ1RjFLUDc1eWpWaktMcGNJWFdJcXBIK2J3OG1uQ0ZwQWRMeUNXRTkvVDZmQzVoSEg1UkI1cEJjdVNEMklEVFYvUjFMaEpzWVVlcThwS1U9IiwiYW1yIjpbInB3ZCIsIm1mYSJdLCJhcHBpZCI6IjE4ZmJjYTE2LTIyMjQtNDVmNi04NWIwLWY3YmYyYjM5YjNmMyIsImFwcGlkYWNyIjoiMCIsImZhbWlseV9uYW1lIjoiU2FtcGFpbyIsImdpdmVuX25hbWUiOiJSZW5hbiIsImdyb3VwcyI6WyJlZGE4NTM4NC0wNmU0LTRlYjEtYTI1ZC0yOGNhYTYwNTA5YzEiLCI0NjlhZmZkZC1hZTQ4LTRiM2YtYTM4NS0yYmFjMWExYjQ5MzUiXSwiaXBhZGRyIjoiMTg5LjEwNi43OC4zNiIsIm5hbWUiOiJSZW5hbiBTYW1wYWlvIiwib2lkIjoiODllZTMyMWQtOTVhZS00ODdhLTlmZmQtYWUwNmU0MzRkMzY4IiwicHVpZCI6IjEwMDMyMDAxQTI5NTg3RTMiLCJyaCI6IjAuQVVVQS13U0hnZk9QS0UyYUJmVkN5UnEtUmtaSWYza0F1dGRQdWtQYXdmajJNQk5GQU1NLiIsInNjcCI6InVzZXJfaW1wZXJzb25hdGlvbiIsInN1YiI6IjJXak1hTVFnQmlkZTY0LWQ3eFY0Wk1PNjdBOXJjR2I2RkpmRk00VDJSVUEiLCJ0aWQiOiI4MTg3MDRmYi04ZmYzLTRkMjgtOWEwNS1mNTQyYzkxYWJlNDYiLCJ1bmlxdWVfbmFtZSI6InJlbmFuc2FtcGFpb0BhbGV4YW5kZXJjb25jZWljYW9ldmxvczR1Lm9ubWljcm9zb2Z0LmNvbSIsInVwbiI6InJlbmFuc2FtcGFpb0BhbGV4YW5kZXJjb25jZWljYW9ldmxvczR1Lm9ubWljcm9zb2Z0LmNvbSIsInV0aSI6Ik9ERzROSERZSjBXRDdtMXp3aEYzQUEiLCJ2ZXIiOiIxLjAiLCJ3aWRzIjpbIjRhNWQ4ZjY1LTQxZGEtNGRlNC04OTY4LWUwMzViNjUzMzljZiIsImI3OWZiZjRkLTNlZjktNDY4OS04MTQzLTc2YjE5NGU4NTUwOSJdLCJ4bXNfdGNkdCI6MTU3OTU3ODQ5NH0.IkAfG2ep0FybGVcgnCksqj7roWo-kRioM7Pt62Mx6A6boYuzI-eDMxfvZgsLIPLOfdz_fNOZnovipwty_sCXLL2agWqXgdpIuqTeU2-NtuXuzV7DddbQFDa3l9SrbMG7jOFEkXfKRjaNXCBYS0nIv-WBu7FB7UUK57gWFTqBzloBA2CPrbOixWfdyhzsmi74uLSw-LCubfH7uGlrBIhN80-APZJ5CgiERxZEtNeAqIDPj4qM8riesIncYRrFC-6TX-Kh6aGrPPovuBcwsfDV6a7N7XnJ3ej-cnCO5UlKY4x4x4IQYEoFmBuIKlcSEAr7PMNWqUbghqGQvgnoKyHs2Q" \
             https://management.azure.com/subscriptions/0b84aeb3-3723-42d4-b77a-6d8b2bb3353a/resources?api-version=2021-04-01)
+          array2=$(echo $json2 | jq '.value')
 
-          value=$(echo $json2 | jq '.value')
-          echo $value
-         
-          # json1=$(cat response.json)
-          # json2=$(curl -H "Content-Type: application/json" \
-          #   -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Ii1LSTNROW5OUjdiUm9meG1lWm9YcWJIWkdldyIsImtpZCI6Ii1LSTNROW5OUjdiUm9meG1lWm9YcWJIWkdldyJ9.eyJhdWQiOiJodHRwczovL21hbmFnZW1lbnQuY29yZS53aW5kb3dzLm5ldCIsImlzcyI6Imh0dHBzOi8vc3RzLndpbmRvd3MubmV0LzgxODcwNGZiLThmZjMtNGQyOC05YTA1LWY1NDJjOTFhYmU0Ni8iLCJpYXQiOjE2ODEzMjY1MTUsIm5iZiI6MTY4MTMyNjUxNSwiZXhwIjoxNjgxMzMxNDQwLCJhY3IiOiIxIiwiYWlvIjoiQVZRQXEvOFRBQUFBWndoeTRyaGt2VFhmbVZBbjJrU00vQ3FyTW1DNVZ1RjFLUDc1eWpWaktMcGNJWFdJcXBIK2J3OG1uQ0ZwQWRMeUNXRTkvVDZmQzVoSEg1UkI1cEJjdVNEMklEVFYvUjFMaEpzWVVlcThwS1U9IiwiYW1yIjpbInB3ZCIsIm1mYSJdLCJhcHBpZCI6IjE4ZmJjYTE2LTIyMjQtNDVmNi04NWIwLWY3YmYyYjM5YjNmMyIsImFwcGlkYWNyIjoiMCIsImZhbWlseV9uYW1lIjoiU2FtcGFpbyIsImdpdmVuX25hbWUiOiJSZW5hbiIsImdyb3VwcyI6WyJlZGE4NTM4NC0wNmU0LTRlYjEtYTI1ZC0yOGNhYTYwNTA5YzEiLCI0NjlhZmZkZC1hZTQ4LTRiM2YtYTM4NS0yYmFjMWExYjQ5MzUiXSwiaXBhZGRyIjoiMTg5LjEwNi43OC4zNiIsIm5hbWUiOiJSZW5hbiBTYW1wYWlvIiwib2lkIjoiODllZTMyMWQtOTVhZS00ODdhLTlmZmQtYWUwNmU0MzRkMzY4IiwicHVpZCI6IjEwMDMyMDAxQTI5NTg3RTMiLCJyaCI6IjAuQVVVQS13U0hnZk9QS0UyYUJmVkN5UnEtUmtaSWYza0F1dGRQdWtQYXdmajJNQk5GQU1NLiIsInNjcCI6InVzZXJfaW1wZXJzb25hdGlvbiIsInN1YiI6IjJXak1hTVFnQmlkZTY0LWQ3eFY0Wk1PNjdBOXJjR2I2RkpmRk00VDJSVUEiLCJ0aWQiOiI4MTg3MDRmYi04ZmYzLTRkMjgtOWEwNS1mNTQyYzkxYWJlNDYiLCJ1bmlxdWVfbmFtZSI6InJlbmFuc2FtcGFpb0BhbGV4YW5kZXJjb25jZWljYW9ldmxvczR1Lm9ubWljcm9zb2Z0LmNvbSIsInVwbiI6InJlbmFuc2FtcGFpb0BhbGV4YW5kZXJjb25jZWljYW9ldmxvczR1Lm9ubWljcm9zb2Z0LmNvbSIsInV0aSI6Ik9ERzROSERZSjBXRDdtMXp3aEYzQUEiLCJ2ZXIiOiIxLjAiLCJ3aWRzIjpbIjRhNWQ4ZjY1LTQxZGEtNGRlNC04OTY4LWUwMzViNjUzMzljZiIsImI3OWZiZjRkLTNlZjktNDY4OS04MTQzLTc2YjE5NGU4NTUwOSJdLCJ4bXNfdGNkdCI6MTU3OTU3ODQ5NH0.IkAfG2ep0FybGVcgnCksqj7roWo-kRioM7Pt62Mx6A6boYuzI-eDMxfvZgsLIPLOfdz_fNOZnovipwty_sCXLL2agWqXgdpIuqTeU2-NtuXuzV7DddbQFDa3l9SrbMG7jOFEkXfKRjaNXCBYS0nIv-WBu7FB7UUK57gWFTqBzloBA2CPrbOixWfdyhzsmi74uLSw-LCubfH7uGlrBIhN80-APZJ5CgiERxZEtNeAqIDPj4qM8riesIncYRrFC-6TX-Kh6aGrPPovuBcwsfDV6a7N7XnJ3ej-cnCO5UlKY4x4x4IQYEoFmBuIKlcSEAr7PMNWqUbghqGQvgnoKyHs2Q" \
-          #   https://management.azure.com/subscriptions/0b84aeb3-3723-42d4-b77a-6d8b2bb3353a/resources?api-version=2021-04-01)
+          # Verifica se a variável array1 está vazia ou nula e define um valor padrão
+          if [ -z "$array1" ]; then
+            array1='[]'
+          fi
 
-          # added=$(echo "$json2" | jq --argjson j1 "$json1" -c '.[] | select(. as $in | ($j1 | .[]) | $in == $in)')
-          # modified=$(echo "$json2" | jq --argjson j1 "$json1" -c '.[] | select(. as $in | ($j1 | .[]) | $in != $in)')
-          # deleted=$(echo "$json1" | jq --argjson j2 "$json2" -c '.[] | select(. as $in | ($j2 | .[]) | $in != $in)')
+          # Identifica as adições
+          added=$(echo "$array2" | jq --argjson array1 "$array1" '. - $array1')
+
+          # Identifica as deleções
+          deleted=$(echo "$array1" | jq --argjson array2 "$array2" '. - $array2')
+
+          # Verifica se houve adições ou deleções
+          if [ "$added" != "[]" ] or [ "$deleted" != "[]" ]; then
+            git config user.email "renansampaio04@yahoo.com.br"
+            git config user.name "RenanSampaioRS"
+
+            git add response.json
+            git commit -m "Adicionando arquivo com resposta da requisição GET"
+            git push origin master
+          fi
+
+          # Verifica se houve adições e printa o resultado
+          if [ "$added" != "[]" ]; then
+            echo "Adições:"
+            echo "$added"
+          fi
+
+          # Verifica se houve deleções e printa o resultado
+          if [ "$deleted" != "[]" ]; then
+            echo "Deleções:"
+            echo "$deleted"
+          fi
 
           # if [[ -n "$added" ]]; then
           #   echo "Adições: $added"
           # fi
 
-          # if [[ -n "$modified" ]]; then
-          #   echo "Modificações: $modified"
-          # fi
-
           # if [[ -n "$deleted" ]]; then
           #   echo "Deleções: $deleted"
           # fi
-
-          # # git config user.email "renansampaio04@yahoo.com.br"
-          # # git config user.name "RenanSampaioRS"
-
-          # # git add response.json
-          # # git commit -m "Adicionando arquivo com resposta da requisição GET"
-          # # git push origin master
-
-      # - name: Creating Release Notes   
-      #   shell: bash     
-      #   run: |       
-      #     # Convert JSON object to string using jq
-      #     my_json_stringified=$(echo ${{ env.az_resources }} | jq -r .)
-      #     # Print the string
-      #     echo $my_json_stringified
-  
-      # - name: Creating Release Notes        
-      #   run: |       
-      #     curl -L \
-      #       -X PATCH \
-      #       -H "Accept: application/vnd.github+json" \
-      #       -H "Authorization: Bearer ${{ secrets.SECRET }}"\
-      #       -H "X-GitHub-Api-Version: 2022-11-28" \
-      #       https://api.github.com/repos/DevOps-Renan/devops_infrastructure_library/actions/variables/AZURE_RESOURCES_JSON \
-      #       -d '{"name":"AZURE_RESOURCES_JSON","value":'${{ env.env.az_resources}}'}'
-
