@@ -24,11 +24,6 @@ jobs:
             https://management.azure.com/subscriptions/0b84aeb3-3723-42d4-b77a-6d8b2bb3353a/resources?api-version=2021-04-01)
           array2=$(echo $json2 | jq '.value')
 
-          # Verifica se a variável array1 está vazia ou nula e define um valor padrão
-          if [ -z "$array1" ]; then
-            array1='[]'
-          fi
-
           # Identifica as adições
           added=$(echo "$array2" | jq --argjson array1 "$array1" '. - $array1')
 
