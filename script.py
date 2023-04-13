@@ -23,6 +23,8 @@ response = requests.get(url, headers=headers)
 
 json2 = response.content
 
+json_str2 = json2.decode("utf-8")
+
 # Converte o objeto JSON em um dicionário Python
 data_b = json.loads(json2)
 
@@ -56,7 +58,7 @@ with tempfile.TemporaryFile(mode='w+t') as file_a:
         if added or removed:
             changed = "false"
             print(f"::set-output name=changed::{changed}")
-            print(f"::set-output name=data_b::{data_b}")
+            print(f"::set-output name=json_str2::{json_str2}")
 
         # Define o conteúdo da mensagem
         if added:
