@@ -5,7 +5,7 @@ import os
 from github import Github
 
 # Configuração da API do GitHub
-g = Github(f"Bearer {os.environ['SEU_TOKEN_PESSOAL']}")
+g = Github(f"Bearer {os.environ['TOKEN']}")
 repo = g.get_repo("DevOps-Renan/devops_infrastructure_library")
 
 with open("response.json", "r") as arquivo:
