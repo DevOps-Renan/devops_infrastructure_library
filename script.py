@@ -46,10 +46,28 @@ with tempfile.TemporaryFile(mode='w+t') as file_a:
         added = set_b - set_a
         removed = set_a - set_b
 
-        # Imprime o resultado
+        webhook_url = "https://discord.com/api/webhooks/1004817962953347073/OOQNuBYEtv_C-SEfqdoIqzpPnwTGByLh7ZXEAPwNw2n1LR2vxdMABTQ-DnB3tav2Oh6e"
+
+        # Define o conteúdo da mensagem
         if added:
+            message_content = f"Adicionado from A to B: {added}"
             print(f"Adicionado from A to B: {added}")
         elif removed:
-            print(f"Removido from A to B: {removed}")
+            message_content = f"Removido from A to B: {removed}"
+            print(f"Adicionado from A to B: {removed}")
         else:
-            print("Não ocorreu mudanças")
+            message_content = "Não ocorreu mudanças"
+
+        # Define o payload da mensagem
+        payload = {
+            "content": message_content
+        }
+
+        # Envia a mensagem para o webhook
+        response = requests.post(webhook_url, json=payload)
+
+        # Verifica se a mensagem foi enviada com sucesso
+        if response.status_code == 204:
+            print("Mensagem enviada com sucesso!")
+        else:
+            print(f"Erro ao enviar mensagem: {response.text}")
