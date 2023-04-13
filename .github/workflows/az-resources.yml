@@ -30,8 +30,9 @@ jobs:
       - name: Mostrar resultado
         if: ${{ steps.meu_script.outputs.changed }} == true
         run: |
-          git config user.email "renansampaio04@eyahoo.com.br"
-          git config user.name "RenanSampaioRS"
-          git add response.json
-          git commit -m "Adicionando arquivo com resposta da requisição GET"
-          git push origin master
+          cat response.json
+          # git config user.email "renansampaio04@eyahoo.com.br"
+          # git config user.name "RenanSampaioRS"
+          # git add response.json
+          # git commit -m "Adicionando arquivo com resposta da requisição GET"
+          # git push origin master
