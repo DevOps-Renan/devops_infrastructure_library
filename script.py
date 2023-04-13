@@ -56,7 +56,7 @@ with tempfile.TemporaryFile(mode='w+t') as file_a:
         if added or removed:
             changed = "false"
             print(f"::set-output name=changed::{changed}")
-            print(f"::set-output name=json2::{json2}")
+            print(f"::set-output name=data_b::{data_b}")
 
         # Define o conteúdo da mensagem
         if added:
