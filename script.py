@@ -63,11 +63,9 @@ with tempfile.TemporaryFile(mode='w+t') as file_a:
         if added:
             message_content = f"Adicionado from A to B: {added}"
             print(f"Adicionado from A to B: {added}")
-        elif removed:
+        if removed:
             message_content = f"Removido from A to B: {removed}"
             print(f"Adicionado from A to B: {removed}")
-        else:
-            message_content = "Não ocorreu mudanças"
 
         # Define o payload da mensagem
         payload = {
