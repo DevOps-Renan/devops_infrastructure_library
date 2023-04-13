@@ -25,6 +25,8 @@ json2 = response.content
 
 json_str2 = json2.decode("utf-8")
 
+print(json_str2)
+
 # Converte o objeto JSON em um dicionário Python
 data_b = json.loads(json2)
 
@@ -57,7 +59,7 @@ with tempfile.TemporaryFile(mode='w+t') as file_a:
 
         if added or removed:
             changed = "false"
-            with open("response.json", "w") as arquivo:
+            with open("response.json", "a") as arquivo:
                 arquivo.write(json.dumps(json_str2))
                 arquivo.write("\n")
 
