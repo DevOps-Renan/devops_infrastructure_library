@@ -67,7 +67,7 @@ jobs:
                   # Imprime o resultado
                   if added:
                       print(f"Adicionado from A to B: {added}")
-                  else if removed:
+                  elif removed:
                       print(f"Removido from A to B: {removed}")
                   else:
                       print("Não ocorreu mudanças")
