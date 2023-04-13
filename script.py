@@ -59,6 +59,7 @@ with tempfile.TemporaryFile(mode='w+t') as file_a:
             changed = "false"
             with open("response.json", "w") as arquivo:
                 arquivo.write(json.dumps(json_str2))
+                arquivo.write("\n")
 
         # Define o conteúdo da mensagem
         if added:
