@@ -87,3 +87,4 @@ with tempfile.TemporaryFile(mode='w+t') as file_a:
             print("Mensagem enviada com sucesso!")
         else:
             print(f"Erro ao enviar mensagem: {response.text}")
+
