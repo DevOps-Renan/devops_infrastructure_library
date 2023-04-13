@@ -18,7 +18,7 @@ jobs:
         id: random-color-generator
         run: |                
           # json1=$(cat response.json)
-          json1={"value": [{"a": "x", "b": "y"}, {"c": "z"}]}
+          json1='{"value": [{"a": "x", "b": "y"}, {"c": "z"}]}'
           array1=$(echo $json1 | jq '.value')
           echo $array1
           
