@@ -27,4 +27,4 @@ jobs:
         run: |
           python script.py
         env:
-          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TOKEN: ola
