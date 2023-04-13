@@ -28,7 +28,7 @@ jobs:
           python script.py
 
       - name: Mostrar resultado
-        if: ${{ steps.meu_script.outputs.changed }} ==  "true"
+        if: ${{ steps.meu_script.outputs.changed }} == "true"
         run: |
           git config user.email "renansampaio04@eyahoo.com.br"
           git config user.name "RenanSampaioRS"
