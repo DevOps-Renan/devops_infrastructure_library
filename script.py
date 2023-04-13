@@ -57,8 +57,8 @@ with tempfile.TemporaryFile(mode='w+t') as file_a:
 
         if added or removed:
             changed = "false"
-            print(f"::set-output name=changed::{changed}")
-            print(f"::set-output name=json_str2::{json_str2}")
+            with open("response.json", "w") as arquivo:
+                arquivo.write(json.dumps(json_str2))
 
         # Define o conteúdo da mensagem
         if added:
