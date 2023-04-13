@@ -64,9 +64,6 @@ jobs:
                   added = set_b - set_a
                   removed = set_a - set_b
 
-                  if added or removed:
-                      
-
                   # Imprime o resultado
                   if added:
                       print(f"Adicionado from A to B: {added}")
