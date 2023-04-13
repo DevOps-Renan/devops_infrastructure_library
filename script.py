@@ -25,8 +25,6 @@ json2 = response.content
 
 json3 = json.loads(response.content)
 
-print(json_str2)
-
 # Converte o objeto JSON em um dicionário Python
 data_b = json.loads(json2)
 
