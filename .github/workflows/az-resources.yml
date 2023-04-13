@@ -16,9 +16,9 @@ jobs:
       - name: Creating Release Notes 1
         shell: sh     
         run: |                
-          import tempfile
-          import requests
-          import json
+          # import tempfile
+          # import requests
+          # import json
 
           with open("response.json", "r") as arquivo:
               json1 = arquivo.read()
