@@ -53,6 +53,8 @@ with tempfile.TemporaryFile(mode='w+t') as file_a:
 
         changed = "false"
 
+        message_content = ""
+
         if added or removed:
             changed = "false"
             with open("response.json", "w") as arquivo:
@@ -63,11 +65,13 @@ with tempfile.TemporaryFile(mode='w+t') as file_a:
         if added:
             message_content = f"Adicionado from A to B: {added}"
             print(f"Adicionado from A to B: {added}")
+
         if removed:
             message_content = f"Removido from A to B: {removed}"
             print(f"Adicionado from A to B: {removed}")
 
-        if message_content:
+
+        if message_content != "":
             # Define o payload da mensagem
             payload = {
                 "content": message_content
