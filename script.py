@@ -60,14 +60,19 @@ with tempfile.TemporaryFile(mode='w+t') as file_a:
             with open("response.json", "w") as arquivo:
                 arquivo.write(json.dumps(data_b))
                 arquivo.write("\n")
+            print(f"::set-output name=changed::{changed}")
 
         # Define o conteúdo da mensagem
-        if added:
+        if added and not removed: 
             message_content = f"Adicionado from A to B: {added}"
             print(f"Adicionado from A to B: {added}")
 
-        if removed:
+        if removed and not added:
             message_content = f"Removido from A to B: {removed}"
+            print(f"Adicionado from A to B: {removed}")
+
+        if removed and added:
+            message_content = f"Removido from A to B: {removed} |||||| Adicionado from A to B: {added}"
             print(f"Adicionado from A to B: {removed}")
         
         if not removed and not added:

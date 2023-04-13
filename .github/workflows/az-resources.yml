@@ -29,7 +29,6 @@ jobs:
 
       - name: Mostrar resultado
         if: ${{ steps.meu_script.outputs.changed }} == true
-        continue-on-error: true
         run: |
           git config user.email "renansampaio04@eyahoo.com.br"
           git config user.name "RenanSampaioRS"
