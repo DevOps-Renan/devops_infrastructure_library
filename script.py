@@ -53,10 +53,8 @@ with tempfile.TemporaryFile(mode='w+t') as file_a:
 
         changed = "false"
 
-        message_content = ""
-
         if added or removed:
-            changed = "false"
+            changed = "true"
             with open("response.json", "w") as arquivo:
                 arquivo.write(json.dumps(data_b))
                 arquivo.write("\n")
