@@ -67,16 +67,17 @@ with tempfile.TemporaryFile(mode='w+t') as file_a:
             message_content = f"Removido from A to B: {removed}"
             print(f"Adicionado from A to B: {removed}")
 
-        # Define o payload da mensagem
-        payload = {
-            "content": message_content
-        }
+        if message_content:
+            # Define o payload da mensagem
+            payload = {
+                "content": message_content
+            }
 
-        # Envia a mensagem para o webhook
-        response = requests.post(webhook_url, json=payload)
+            # Envia a mensagem para o webhook
+            response = requests.post(webhook_url, json=payload)
 
-        # Verifica se a mensagem foi enviada com sucesso
-        if response.status_code == 204:
-            print("Mensagem enviada com sucesso!")
-        else:
-            print(f"Erro ao enviar mensagem: {response.text}")
+            # Verifica se a mensagem foi enviada com sucesso
+            if response.status_code == 204:
+                print("Mensagem enviada com sucesso!")
+            else:
+                print(f"Erro ao enviar mensagem: {response.text}")
