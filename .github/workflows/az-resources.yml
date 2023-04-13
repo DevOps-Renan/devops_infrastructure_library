@@ -22,8 +22,7 @@ jobs:
           echo "array1=$array1" >> $GITHUB_ENV
 
 
-      - name: Creating Release Notes 2 
-        shell: bash     
+      - name: Creating Release Notes 2     
         run: |                
           echo ${{ env.array1 }}
           # # Identifica as adições
