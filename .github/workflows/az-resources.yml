@@ -24,7 +24,7 @@ jobs:
 
       - name: Creating Release Notes 2     
         run: |                
-          echo ${{ env.array1 }}
+          echo "${{ env.array1 }}"
           # # Identifica as adições
           # added=$(echo "${{ env.array2 }}" | jq --argjson array1 "${{ env.array1 }}" '. - ${{ env.array1 }}')
 
