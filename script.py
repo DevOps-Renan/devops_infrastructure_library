@@ -23,7 +23,7 @@ response = requests.get(url, headers=headers)
 
 json2 = response.content
 
-json_str2 = json2.decode("utf-8")
+json3 = json.loads(response.content)
 
 print(json_str2)
 
@@ -59,8 +59,8 @@ with tempfile.TemporaryFile(mode='w+t') as file_a:
 
         if added or removed:
             changed = "false"
-            with open("response.json", "a") as arquivo:
-                arquivo.write(json.dumps(json_str2))
+            with open("response.json", "w") as arquivo:
+                arquivo.write(json.dumps(json3))
                 arquivo.write("\n")
 
         # Define o conteúdo da mensagem
