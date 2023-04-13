@@ -20,8 +20,8 @@ jobs:
           # json1=$(cat response.json)
           json1='{"value": [{"a": "x", "b": "y"}, {"c": "z"}]}'
           array1=$(echo $json1 | jq '.value')
-          echo "array1=$array1" >> $GITHUB_ENV
           sed -i 's/^[ \t]*//' $GITHUB_ENV
+          echo "array1=$array1" >> $GITHUB_ENV
 
 
       - name: Creating Release Notes 2 
