@@ -2,13 +2,11 @@ import tempfile
 import requests
 import json
 import os
+from github import Github
 
-# Variáveis de ambiente
-GITHUB_API_URL = "https://api.github.com"
-GITHUB_REPOSITORY = os.environ["GITHUB_REPOSITORY"]
-GITHUB_REF = os.environ["GITHUB_REF"]
-GITHUB_HEAD_REF = os.environ.get("GITHUB_HEAD_REF")
-GITHUB_TOKEN = os.environ["GITHUB_TOKEN"]
+# Configuração da API do GitHub
+g = Github(f"Bearer {os.environ['SEU_TOKEN_PESSOAL']}")
+repo = g.get_repo("DevOps-Renan/devops_infrastructure_library")
 
 with open("response.json", "r") as arquivo:
     json1 = arquivo.read()
@@ -57,31 +55,15 @@ with tempfile.TemporaryFile(mode='w+t') as file_a:
         webhook_url = "https://discord.com/api/webhooks/1004817962953347073/OOQNuBYEtv_C-SEfqdoIqzpPnwTGByLh7ZXEAPwNw2n1LR2vxdMABTQ-DnB3tav2Oh6e"
 
         # Se houve mudanças, faz o commit
+
         if added or removed:
-            # Cria o objeto de commit
-            commit = {
-                "message": "Atualiza response.json",
-                "content": json2.decode("utf-8"),
-                "sha": sha
-            }
+            # <escreva_seu_codigo_aqui>
 
-            # Faz a autenticação com o token de acesso do GitHub
-            headers = {
-                "Authorization": f"Bearer {GITHUB_TOKEN}",
-                "Accept": "application/vnd.github.v3+json"
-            }
-
-            # URL do endpoint para atualização do arquivo
-            url = f"{GITHUB_API_URL}/repos/{GITHUB_REPOSITORY}/contents/response.json"
-
-            # Faz a requisição para atualizar o arquivo
-            response = requests.put(url, headers=headers, json=commit)
-
-            # Se o status da requisição for 200 (OK), o arquivo foi atualizado com sucesso
-            if response.status_code == 200:
-                print("Arquivo atualizado com sucesso!")
-            else:
-                print(f"Erro ao atualizar arquivo: {response.content}")
+            # Atualiza o arquivo response.json se houver alterações
+            with open("response.json", "w") as arquivo:
+                arquivo.write(json2.decode("utf-8"))
+            repo.index.commit("Atualização de response.json")
+            repo.remote().push()
 
         # Define o conteúdo da mensagem
         if added:
