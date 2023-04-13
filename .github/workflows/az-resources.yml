@@ -20,6 +20,7 @@ jobs:
           array1=$(echo $json1 | jq '.value')
           echo "array1=$(array1)" >> $GITHUB_ENV
 
+          echo $array1
           echo ${{ env.array1 }}
           
           # json2=$(curl -H "Content-Type: application/json" \
