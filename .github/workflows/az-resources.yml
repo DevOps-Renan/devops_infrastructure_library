@@ -26,23 +26,25 @@ jobs:
           # Define as variáveis necessárias para enviar a requisição
           API_URL='https://management.azure.com/subscriptions/0b84aeb3-3723-42d4-b77a-6d8b2bb3353a/resources?api-version=2021-04-01'
           # Envia a solicitação para a API da Azure
-          x=$(curl -X GET $API_URL \
-            -H "Authorization: Bearer $ACCESS_TOKEN")
-          echo $x
+          echo "x=$(curl -X GET $API_URL \
+            -H "Authorization: Bearer $ACCESS_TOKEN")" >> $GITHUB_ENV
 
-      # - name: Configurar ambiente Python
-      #   uses: actions/setup-python@v2
-      #   with:
-      #     python-version: 3.x
+      - name: Configurar ambiente Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
 
-      # - name: Instalar módulos Python necessários
-      #   run: |
-      #     pip install requests
+      - name: Instalar módulos Python necessários
+        run: |
+          pip install requests
 
-      # - name: Executar script Python
-      #   id: meu_script
-      #   run: |
-      #     python script.py
+      - name: Executar script Python
+        id: meu_script
+        run: |
+          python script.py
+        env: 
+          JSON: ${{ env.x }}
+
 
       # - name: Mostrar resultado
       #   if: ${{ steps.meu_script.outputs.changed }} == "true"
