@@ -23,7 +23,12 @@ jobs:
             -d "resource=$RESOURCE" \
             | jq -r .access_token)
 
-          echo $ACCESS_TOKEN
+          # Define as variáveis necessárias para enviar a requisição
+          API_URL='https://management.azure.com/subscriptions/0b84aeb3-3723-42d4-b77a-6d8b2bb3353a/resources?api-version=2021-04-01'
+          # Envia a solicitação para a API da Azure
+          x=$(curl -X GET $API_URL \
+            -H "Authorization: Bearer $ACCESS_TOKEN")
+          echo $x
 
       # - name: Configurar ambiente Python
       #   uses: actions/setup-python@v2
