@@ -3,14 +3,14 @@ import requests
 import json
 import os
 
-# with open("response.json", "r") as arquivo:
-#     json1 = arquivo.read()
+with open("response.json", "r") as arquivo:
+    json1 = arquivo.read()
 
-# # Converte o objeto JSON em um dicionário Python
-# data_a = json.loads(json1)
+# Converte o objeto JSON em um dicionário Python
+data_a = json.loads(json1)
 
-# # Acessa a chave "value" do dicionário e imprime seu valor
-# array_a = data_a['value']
+# Acessa a chave "value" do dicionário e imprime seu valor
+array_a = data_a['value']
 
 # # url = "https://management.azure.com/subscriptions/0b84aeb3-3723-42d4-b77a-6d8b2bb3353a/resources?api-version=2021-04-01"
 
@@ -27,71 +27,71 @@ json2 = os.getenv('JSON')
 
 print(json2)
 
-# # Converte o objeto JSON em um dicionário Python
-# data_b = json.loads(json2)
+# Converte o objeto JSON em um dicionário Python
+data_b = json.loads(json2)
 
-# # Acessa a chave "value" do dicionário e imprime seu valor
-# array_b = data_b['value']
+# Acessa a chave "value" do dicionário e imprime seu valor
+array_b = data_b['value']
 
-# # Cria um arquivo temporário para o array A
-# with tempfile.TemporaryFile(mode='w+t') as file_a:
-#     file_a.writelines([f"{item}\n" for item in array_a])
-#     file_a.seek(0)
+# Cria um arquivo temporário para o array A
+with tempfile.TemporaryFile(mode='w+t') as file_a:
+    file_a.writelines([f"{item}\n" for item in array_a])
+    file_a.seek(0)
 
-#     # Cria um arquivo temporário para o array B
-#     with tempfile.TemporaryFile(mode='w+t') as file_b:
-#         file_b.writelines([f"{item}\n" for item in array_b])
-#         file_b.seek(0)
+    # Cria um arquivo temporário para o array B
+    with tempfile.TemporaryFile(mode='w+t') as file_b:
+        file_b.writelines([f"{item}\n" for item in array_b])
+        file_b.seek(0)
 
-#         # Lê o conteúdo dos arquivos temporários e converte em conjuntos
-#         set_a = set(file_a.readlines())
-#         set_b = set(file_b.readlines())
+        # Lê o conteúdo dos arquivos temporários e converte em conjuntos
+        set_a = set(file_a.readlines())
+        set_b = set(file_b.readlines())
 
-#         # Calcula a diferença entre os conjuntos
-#         added = set_b - set_a
-#         removed = set_a - set_b
+        # Calcula a diferença entre os conjuntos
+        added = set_b - set_a
+        removed = set_a - set_b
 
-#         webhook_url = "https://discord.com/api/webhooks/1004817962953347073/OOQNuBYEtv_C-SEfqdoIqzpPnwTGByLh7ZXEAPwNw2n1LR2vxdMABTQ-DnB3tav2Oh6e"
+        webhook_url = "https://discord.com/api/webhooks/1004817962953347073/OOQNuBYEtv_C-SEfqdoIqzpPnwTGByLh7ZXEAPwNw2n1LR2vxdMABTQ-DnB3tav2Oh6e"
 
-#         # Se houve mudanças, faz o commit
+        # Se houve mudanças, faz o commit
 
-#         changed = "false"
+        changed = "false"
 
-#         if added or removed:
-#             changed = "true"
-#             with open("response.json", "w") as arquivo:
-#                 arquivo.write(json.dumps(data_b))
-#                 arquivo.write("\n")
-#             print(f"::set-output name=changed::{changed}")
+        if added or removed:
+            changed = "true"
+            with open("response.json", "w") as arquivo:
+                arquivo.write(json.dumps(data_b))
+                arquivo.write("\n")
+            print(f"::set-output name=changed::{changed}")
 
-#         # Define o conteúdo da mensagem
-#         if added and not removed: 
-#             message_content = f"Adicionado from A to B: {added}"
-#             print(f"Adicionado from A to B: {added}")
+        # Define o conteúdo da mensagem
+        if added and not removed: 
+            message_content = f"Adicionado from A to B: {added}"
+            print(f"Adicionado from A to B: {added}")
 
-#         if removed and not added:
-#             message_content = f"Removido from A to B: {removed}"
-#             print(f"Adicionado from A to B: {removed}")
+        if removed and not added:
+            message_content = f"Removido from A to B: {removed}"
+            print(f"Adicionado from A to B: {removed}")
 
-#         if removed and added:
-#             message_content = f"Removido from A to B: {removed} |||||| Adicionado from A to B: {added}"
-#             print(f"Adicionado from A to B: {removed}")
+        if removed and added:
+            message_content = f"Removido from A to B: {removed} |||||| Adicionado from A to B: {added}"
+            print(f"Adicionado from A to B: {removed}")
         
-#         if not removed and not added:
-#             message_content = "Nada modificado"
-#             print("Nada modificado")
+        if not removed and not added:
+            message_content = "Nada modificado"
+            print("Nada modificado")
 
-#         # Define o payload da mensagem
-#         payload = {
-#             "content": message_content
-#         }
+        # Define o payload da mensagem
+        payload = {
+            "content": message_content
+        }
 
-#         # Envia a mensagem para o webhook
-#         response = requests.post(webhook_url, json=payload)
+        # Envia a mensagem para o webhook
+        response = requests.post(webhook_url, json=payload)
 
-#         # Verifica se a mensagem foi enviada com sucesso
-#         if response.status_code == 204:
-#             print("Mensagem enviada com sucesso!")
-#         else:
-#             print(f"Erro ao enviar mensagem: {response.text}")
+        # Verifica se a mensagem foi enviada com sucesso
+        if response.status_code == 204:
+            print("Mensagem enviada com sucesso!")
+        else:
+            print(f"Erro ao enviar mensagem: {response.text}")
 
