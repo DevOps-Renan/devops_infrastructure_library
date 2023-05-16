@@ -20,7 +20,7 @@ jobs:
             const { Octokit } = require('@octokit/rest');
 
             const octokit = new Octokit({
-              auth: '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'
+              auth: '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'
             })
 
             await octokit.request('GET /organizations/{org}/personal-access-tokens', {
